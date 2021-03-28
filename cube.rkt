@@ -27,10 +27,10 @@ pred orientations {
 	UFace.toleft = LFace
 	UFace.todown = FFace
 
-	DFace.toup = FFace
-	DFace.toright = RFace
-	DFace.toleft = LFace
-	DFace.todown = BFace
+	FFace.toup = UFace
+	FFace.toright = RFace
+	FFace.toleft = LFace
+	FFace.todown = DFace
 
 	LFace.toup = UFace
 	LFace.toright = FFace
@@ -42,18 +42,20 @@ pred orientations {
 	RFace.toleft = FFace
 	RFace.todown = DFace
 
-	FFace.toup = UFace
-	FFace.toright = RFace
-	FFace.toleft = LFace
-	FFace.todown = DFace
-
 	BFace.toup = UFace
 	BFace.toright = LFace
 	BFace.toleft = RFace
 	BFace.todown = DFace
+
+	DFace.toup = FFace
+	DFace.toright = RFace
+	DFace.toleft = LFace
+	DFace.todown = BFace
 }
 
 pred basics {
+	orientations
+
 	-- ADD HARD-CODING OF FACE FIELDS HERE (TOUP, TODOWN, ETC.)
 	UFace.center = White
 	FFace.center = Green
@@ -61,8 +63,6 @@ pred basics {
 	RFace.center = Red
 	BFace.center = Blue
 	DFace.center = Yellow
-
-	orientations
 
 	-- enforces that each sticker is set to exactly one color
 	all face: Face | {
