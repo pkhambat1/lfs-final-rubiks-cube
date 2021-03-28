@@ -20,6 +20,39 @@ abstract sig Face {
 
 one sig UFace, FFace, LFace, RFace, BFace, DFace extends Face {}
 
+pred orientations {
+	-- Toup, todown, etc	
+	UFace.toup = BFace
+	UFace.toright = RFace
+	UFace.toleft = LFace
+	UFace.todown = FFace
+
+	DFace.toup = FFace
+	DFace.toright = RFace
+	DFace.toleft = LFace
+	DFace.todown = BFace
+
+	LFace.toup = UFace
+	LFace.toright = FFace
+	LFace.toleft = BFace
+	LFace.todown = DFace
+
+	RFace.toup = UFace
+	RFace.toright = BFace
+	RFace.toleft = FFace
+	RFace.todown = DFace
+
+	FFace.toup = UFace
+	FFace.toright = RFace
+	FFace.toleft = LFace
+	FFace.todown = DFace
+
+	BFace.toup = UFace
+	BFace.toright = LFace
+	BFace.toleft = RFace
+	BFace.todown = DFace
+}
+
 pred basics {
 	-- ADD HARD-CODING OF FACE FIELDS HERE (TOUP, TODOWN, ETC.)
 	UFace.center = White
@@ -29,12 +62,18 @@ pred basics {
 	BFace.center = Blue
 	DFace.center = Yellow
 
+	orientations
+
 	-- enforces that each sticker is set to exactly one color
 	all face: Face | {
 		all pos: Position | {
 			one face.stickers[pos]
 		}
 	}
+}
+
+test expect {
+	eightStickersPerFace : {basics implies (all f : Face | #(f.stickers) = 8)} is theorem
 }
 
 pred solved {
