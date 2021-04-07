@@ -41,33 +41,33 @@ pred rotations {
     (UFace->BL)->(UFace->TL) + -- Current Face
     (UFace->BM)->(UFace->ML) + -- Current Face
     (UFace->BR)->(UFace->BL) + -- Current Face
-    (FFace->TL)->(FFace->TL) +
-    (FFace->TM)->(FFace->TM) +
-    (FFace->TR)->(FFace->TR) +
+    (FFace->TL)->(LFace->TL) + --
+    (FFace->TM)->(LFace->TM) + --
+    (FFace->TR)->(LFace->TR) + --
     (FFace->ML)->(FFace->ML) +
     (FFace->MR)->(FFace->MR) +
     (FFace->BL)->(FFace->BL) +
     (FFace->BM)->(FFace->BM) +
     (FFace->BR)->(FFace->BR) +
-    (LFace->TL)->(LFace->TL) +
-    (LFace->TM)->(LFace->TM) +
-    (LFace->TR)->(LFace->TR) +
+    (LFace->TL)->(BFace->TL) + --
+    (LFace->TM)->(BFace->TM) + --
+    (LFace->TR)->(BFace->TR) + --
     (LFace->ML)->(LFace->ML) +
     (LFace->MR)->(LFace->MR) +
     (LFace->BL)->(LFace->BL) +
     (LFace->BM)->(LFace->BM) +
     (LFace->BR)->(LFace->BR) +
-    (RFace->TL)->(RFace->TL) +
-    (RFace->TM)->(RFace->TM) +
-    (RFace->TR)->(RFace->TR) +
+    (RFace->TL)->(FFace->TL) + --
+    (RFace->TM)->(FFace->TM) + --
+    (RFace->TR)->(FFace->TR) + --
     (RFace->ML)->(RFace->ML) +
     (RFace->MR)->(RFace->MR) +
     (RFace->BL)->(RFace->BL) +
     (RFace->BM)->(RFace->BM) +
     (RFace->BR)->(RFace->BR) +
-    (BFace->TL)->(BFace->TL) +
-    (BFace->TM)->(BFace->TM) +
-    (BFace->TR)->(BFace->TR) +
+    (BFace->TL)->(RFace->TL) + --
+    (BFace->TM)->(RFace->TM) + --
+    (BFace->TR)->(RFace->TR) + --
     (BFace->ML)->(BFace->ML) +
     (BFace->MR)->(BFace->MR) +
     (BFace->BL)->(BFace->BL) +
@@ -202,14 +202,14 @@ pred rotations {
     (FFace->BL)->(FFace->BL) +
     (FFace->BM)->(FFace->BM) +
     (FFace->BR)->(FFace->BR) +
-    (LFace->TL)->(LFace->TL) +
-    (LFace->TM)->(LFace->TM) +
-    (LFace->TR)->(LFace->TR) +
-    (LFace->ML)->(LFace->ML) +
-    (LFace->MR)->(LFace->MR) +
-    (LFace->BL)->(LFace->BL) +
-    (LFace->BM)->(LFace->BM) +
-    (LFace->BR)->(LFace->BR) +
+    (LFace->TL)->(LFace->TL) + -- Opposite Face
+    (LFace->TM)->(LFace->TM) + -- Opposite Face
+    (LFace->TR)->(LFace->TR) + -- Opposite Face
+    (LFace->ML)->(LFace->ML) + -- Opposite Face
+    (LFace->MR)->(LFace->MR) + -- Opposite Face
+    (LFace->BL)->(LFace->BL) + -- Opposite Face
+    (LFace->BM)->(LFace->BM) + -- Opposite Face
+    (LFace->BR)->(LFace->BR) + -- Opposite Face
     (RFace->TL)->(RFace->TR) + -- Current Face
     (RFace->TM)->(RFace->MR) + -- Current Face
     (RFace->TR)->(RFace->BR) + -- Current Face
@@ -245,14 +245,14 @@ pred rotations {
     (UFace->BL)->(UFace->BL) +
     (UFace->BM)->(UFace->BM) +
     (UFace->BR)->(UFace->BR) +
-    (FFace->TL)->(FFace->TL) +
-    (FFace->TM)->(FFace->TM) +
-    (FFace->TR)->(FFace->TR) +
-    (FFace->ML)->(FFace->ML) +
-    (FFace->MR)->(FFace->MR) +
-    (FFace->BL)->(FFace->BL) +
-    (FFace->BM)->(FFace->BM) +
-    (FFace->BR)->(FFace->BR) +
+    (FFace->TL)->(FFace->TL) + -- Opposite Face
+    (FFace->TM)->(FFace->TM) + -- Opposite Face
+    (FFace->TR)->(FFace->TR) + -- Opposite Face
+    (FFace->ML)->(FFace->ML) + -- Opposite Face
+    (FFace->MR)->(FFace->MR) + -- Opposite Face
+    (FFace->BL)->(FFace->BL) + -- Opposite Face
+    (FFace->BM)->(FFace->BM) + -- Opposite Face
+    (FFace->BR)->(FFace->BR) + -- Opposite Face
     (LFace->TL)->(LFace->TL) +
     (LFace->TM)->(LFace->TM) +
     (LFace->TR)->(LFace->TR) +
@@ -269,65 +269,14 @@ pred rotations {
     (RFace->BL)->(RFace->BL) +
     (RFace->BM)->(RFace->BM) +
     (RFace->BR)->(RFace->BR) +
-    (BFace->TL)->(BFace->TL) +
-    (BFace->TM)->(BFace->TM) +
-    (BFace->TR)->(BFace->TR) +
-    (BFace->ML)->(BFace->ML) +
-    (BFace->MR)->(BFace->MR) +
-    (BFace->BL)->(BFace->BL) +
-    (BFace->BM)->(BFace->BM) +
-    (BFace->BR)->(BFace->BR) +
-    (DFace->TL)->(DFace->TR) +
-    (DFace->TM)->(DFace->MR) +
-    (DFace->TR)->(DFace->BR) +
-    (DFace->ML)->(DFace->TM) +
-    (DFace->MR)->(DFace->BM) +
-    (DFace->BL)->(DFace->TL) +
-    (DFace->BM)->(DFace->ML) +
-    (DFace->BR)->(DFace->BL)  
-
-    --- DFace Rotations
-    DFace.rot =
-    (UFace->TL)->(UFace->TL) +
-    (UFace->TM)->(UFace->TM) +
-    (UFace->TR)->(UFace->TR) +
-    (UFace->ML)->(UFace->ML) +
-    (UFace->MR)->(UFace->MR) +
-    (UFace->BL)->(UFace->BL) +
-    (UFace->BM)->(UFace->BM) +
-    (UFace->BR)->(UFace->BR) +
-    (FFace->TL)->(FFace->TL) +
-    (FFace->TM)->(FFace->TM) +
-    (FFace->TR)->(FFace->TR) +
-    (FFace->ML)->(FFace->ML) +
-    (FFace->MR)->(FFace->MR) +
-    (FFace->BL)->(FFace->BL) +
-    (FFace->BM)->(FFace->BM) +
-    (FFace->BR)->(FFace->BR) +
-    (LFace->TL)->(LFace->TL) +
-    (LFace->TM)->(LFace->TM) +
-    (LFace->TR)->(LFace->TR) +
-    (LFace->ML)->(LFace->ML) +
-    (LFace->MR)->(LFace->MR) +
-    (LFace->BL)->(LFace->BL) +
-    (LFace->BM)->(LFace->BM) +
-    (LFace->BR)->(LFace->BR) +
-    (RFace->TL)->(RFace->TL) +
-    (RFace->TM)->(RFace->TM) +
-    (RFace->TR)->(RFace->TR) +
-    (RFace->ML)->(RFace->ML) +
-    (RFace->MR)->(RFace->MR) +
-    (RFace->BL)->(RFace->BL) +
-    (RFace->BM)->(RFace->BM) +
-    (RFace->BR)->(RFace->BR) +
-    (BFace->TL)->(BFace->TL) +
-    (BFace->TM)->(BFace->TM) +
-    (BFace->TR)->(BFace->TR) +
-    (BFace->ML)->(BFace->ML) +
-    (BFace->MR)->(BFace->MR) +
-    (BFace->BL)->(BFace->BL) +
-    (BFace->BM)->(BFace->BM) +
-    (BFace->BR)->(BFace->BR) +
+    (BFace->TL)->(BFace->TR) + -- Current Face
+    (BFace->TM)->(BFace->MR) + -- Current Face
+    (BFace->TR)->(BFace->BR) + -- Current Face
+    (BFace->ML)->(BFace->TM) + -- Current Face
+    (BFace->MR)->(BFace->BM) + -- Current Face
+    (BFace->BL)->(BFace->TL) + -- Current Face
+    (BFace->BM)->(BFace->ML) + -- Current Face
+    (BFace->BR)->(BFace->BL) + -- Current Face
     (DFace->TL)->(DFace->TL) +
     (DFace->TM)->(DFace->TM) +
     (DFace->TR)->(DFace->TR) +
@@ -336,6 +285,57 @@ pred rotations {
     (DFace->BL)->(DFace->BL) +
     (DFace->BM)->(DFace->BM) +
     (DFace->BR)->(DFace->BR)
+
+    --- DFace Rotations
+    DFace.rot =
+    (UFace->TL)->(UFace->TL) + -- Opposite Face
+    (UFace->TM)->(UFace->TM) + -- Opposite Face
+    (UFace->TR)->(UFace->TR) + -- Opposite Face
+    (UFace->ML)->(UFace->ML) + -- Opposite Face
+    (UFace->MR)->(UFace->MR) + -- Opposite Face
+    (UFace->BL)->(UFace->BL) + -- Opposite Face
+    (UFace->BM)->(UFace->BM) + -- Opposite Face
+    (UFace->BR)->(UFace->BR) + -- Opposite Face
+    (FFace->TL)->(FFace->TL) +
+    (FFace->TM)->(FFace->TM) +
+    (FFace->TR)->(FFace->TR) +
+    (FFace->ML)->(FFace->ML) +
+    (FFace->MR)->(FFace->MR) +
+    (FFace->BL)->(FFace->BL) +
+    (FFace->BM)->(FFace->BM) +
+    (FFace->BR)->(FFace->BR) +
+    (LFace->TL)->(LFace->TL) +
+    (LFace->TM)->(LFace->TM) +
+    (LFace->TR)->(LFace->TR) +
+    (LFace->ML)->(LFace->ML) +
+    (LFace->MR)->(LFace->MR) +
+    (LFace->BL)->(LFace->BL) +
+    (LFace->BM)->(LFace->BM) +
+    (LFace->BR)->(LFace->BR) +
+    (RFace->TL)->(RFace->TL) +
+    (RFace->TM)->(RFace->TM) +
+    (RFace->TR)->(RFace->TR) +
+    (RFace->ML)->(RFace->ML) +
+    (RFace->MR)->(RFace->MR) +
+    (RFace->BL)->(RFace->BL) +
+    (RFace->BM)->(RFace->BM) +
+    (RFace->BR)->(RFace->BR) +
+    (BFace->TL)->(BFace->TL) +
+    (BFace->TM)->(BFace->TM) +
+    (BFace->TR)->(BFace->TR) +
+    (BFace->ML)->(BFace->ML) +
+    (BFace->MR)->(BFace->MR) +
+    (BFace->BL)->(BFace->BL) +
+    (BFace->BM)->(BFace->BM) +
+    (BFace->BR)->(BFace->BR) +
+    (DFace->TL)->(DFace->TR) + -- Current Face
+    (DFace->TM)->(DFace->MR) + -- Current Face
+    (DFace->TR)->(DFace->BR) + -- Current Face
+    (DFace->ML)->(DFace->TM) + -- Current Face
+    (DFace->MR)->(DFace->BM) + -- Current Face
+    (DFace->BL)->(DFace->TL) + -- Current Face
+    (DFace->BM)->(DFace->ML) + -- Current Face
+    (DFace->BR)->(DFace->BL)   -- Current Face
 }
 
 one sig UFace, FFace, LFace, RFace, BFace, DFace extends Face {}
