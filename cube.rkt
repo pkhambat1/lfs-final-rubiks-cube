@@ -36,6 +36,14 @@ pred rotate[rf: Face] {
     }
 }
 
+pred counter_rotate[rf: Face] {
+    all f: Face | {
+        all p: Position | {
+            get_sticker_color[stickers', f->p] = get_sticker_color[stickers, rf.rot[f][p]]
+        }
+    }
+}
+
 /*
 -- helper transition preds
 -- use for rotating face
@@ -436,10 +444,17 @@ pred solved_stutter {
 	stickers' = stickers
 }
 
+pred less_dumb_solver {
+	always(all f: Face | rotate[f] implies not after counter_rotate[f])
+	always(all f: Face | counter_rotate[f] implies not after rotate[f])
+	always(not solved implies stickers != stickers'''')
+}
+
 pred traces {
 	basics
+	less_dumb_solver
 	not solved
-	always(not solved iff {some f: Face | rotate[f]})
+	always(not solved iff {some f: Face | rotate[f] or counter_rotate[f]})
 	always(not solved implies eventually always solved)
 }
 
