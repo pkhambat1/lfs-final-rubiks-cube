@@ -1,7 +1,7 @@
 #lang forge
 
 option problem_type temporal
-option max_tracelength 14
+option max_tracelength 2
 
 abstract sig Color {}
 one sig White, Green, Orange, Red, Blue, Yellow extends Color {}
@@ -16,19 +16,50 @@ abstract sig Face {
 	todown: one Face,
 	toleft: one Face,
 	toright: one Face,
-	rot: set (Face->Position)->(Face->Position)
+	rot: set Face->Position->Face->Position
 }
+
+one sig UFace, FFace, LFace, RFace, BFace, DFace extends Face {}
 
 -- stickers: Face->Position->Color
 -- stickers[Face->Position] --> gives us the color
 
+fun get_sticker_color[sticks: Face->Position->Color, fp: Face->Position]: Color {
+	{ (fp.Position).sticks[Face.fp] }
+}
+
 pred rotate[rf: Face] {
     all f: Face | {
         all p: Position | {
-            stickers[f->p] = stickers'[rf.rot[f->p]]
+            get_sticker_color[stickers, f->p] = get_sticker_color[stickers', rf.rot[f][p]]
         }
     }
 }
+
+/*
+-- helper transition preds
+-- use for rotating face
+pred rotateFacePlane[f: Face] {
+    -- positions are TL, TM, TR, ML, MR, BL, BM, BR
+    -- f.stickers is Position->Color
+    -- f.stickers[Position] is Color
+    -- f.stickers.Color is position
+    f.stickers[TL] = f.(stickers')[TR]
+    f.stickers[TM] = f.(stickers')[MR]
+    f.stickers[TR] = f.(stickers')[BR]
+    f.stickers[MR] = f.(stickers')[BM]
+    f.stickers[BR] = f.(stickers')[BL]
+    f.stickers[BM] = f.(stickers')[ML]
+    f.stickers[BL] = f.(stickers')[TL]
+    f.stickers[ML] = f.(stickers')[TM]
+}
+
+-- use for opposite of rotating face
+pred dontChangeFacePlane[f: Face] {
+    -- f.stickers is Position->Color
+    f.stickers' = f.stickers
+}
+*/
 
 pred rotations {
     --- UFace Rotations
@@ -89,9 +120,9 @@ pred rotations {
     (UFace->TR)->(UFace->TR) +
     (UFace->ML)->(UFace->ML) +
     (UFace->MR)->(UFace->MR) +
-    (UFace->BL)->(UFace->BL) +
-    (UFace->BM)->(UFace->BM) +
-    (UFace->BR)->(UFace->BR) +
+    (UFace->BL)->(RFace->TL) + --
+    (UFace->BM)->(RFace->ML) + --
+    (UFace->BR)->(RFace->BL) + --
     (FFace->TL)->(FFace->TR) + -- Current Face
     (FFace->TM)->(FFace->MR) + -- Current Face
     (FFace->TR)->(FFace->BR) + -- Current Face
@@ -102,18 +133,18 @@ pred rotations {
     (FFace->BR)->(FFace->BL) + -- Current Face
     (LFace->TL)->(LFace->TL) +
     (LFace->TM)->(LFace->TM) +
-    (LFace->TR)->(LFace->TR) +
+    (LFace->TR)->(UFace->BR) + --
     (LFace->ML)->(LFace->ML) +
-    (LFace->MR)->(LFace->MR) +
+    (LFace->MR)->(UFace->BM) + --
     (LFace->BL)->(LFace->BL) +
     (LFace->BM)->(LFace->BM) +
-    (LFace->BR)->(LFace->BR) +
-    (RFace->TL)->(RFace->TL) +
+    (LFace->BR)->(UFace->BL) + --
+    (RFace->TL)->(DFace->TR) + --
     (RFace->TM)->(RFace->TM) +
     (RFace->TR)->(RFace->TR) +
-    (RFace->ML)->(RFace->ML) +
+    (RFace->ML)->(DFace->TM) + --
     (RFace->MR)->(RFace->MR) +
-    (RFace->BL)->(RFace->BL) +
+    (RFace->BL)->(DFace->TL) + --
     (RFace->BM)->(RFace->BM) +
     (RFace->BR)->(RFace->BR) +
     (BFace->TL)->(BFace->TL) + -- Opposite Face
@@ -124,9 +155,9 @@ pred rotations {
     (BFace->BL)->(BFace->BL) + -- Opposite Face
     (BFace->BM)->(BFace->BM) + -- Opposite Face
     (BFace->BR)->(BFace->BR) + -- Opposite Face
-    (DFace->TL)->(DFace->TL) +
-    (DFace->TM)->(DFace->TM) +
-    (DFace->TR)->(DFace->TR) +
+    (DFace->TL)->(LFace->TR) + --
+    (DFace->TM)->(LFace->MR) + --
+    (DFace->TR)->(LFace->BR) + --
     (DFace->ML)->(DFace->ML) +
     (DFace->MR)->(DFace->MR) +
     (DFace->BL)->(DFace->BL) +
@@ -135,20 +166,20 @@ pred rotations {
 
     --- LFace Rotations
     LFace.rot =
-    (UFace->TL)->(UFace->TL) +
+    (UFace->TL)->(FFace->TL) + --
     (UFace->TM)->(UFace->TM) +
     (UFace->TR)->(UFace->TR) +
-    (UFace->ML)->(UFace->ML) +
+    (UFace->ML)->(FFace->ML) + --
     (UFace->MR)->(UFace->MR) +
-    (UFace->BL)->(UFace->BL) +
+    (UFace->BL)->(FFace->BL) + --
     (UFace->BM)->(UFace->BM) +
     (UFace->BR)->(UFace->BR) +
-    (FFace->TL)->(FFace->TL) +
+    (FFace->TL)->(DFace->TL) + --
     (FFace->TM)->(FFace->TM) +
     (FFace->TR)->(FFace->TR) +
-    (FFace->ML)->(FFace->ML) +
+    (FFace->ML)->(DFace->ML) + --
     (FFace->MR)->(FFace->MR) +
-    (FFace->BL)->(FFace->BL) +
+    (FFace->BL)->(DFace->BL) + --
     (FFace->BM)->(FFace->BM) +
     (FFace->BR)->(FFace->BR) +
     (LFace->TL)->(LFace->TR) + -- Current Face
@@ -169,18 +200,18 @@ pred rotations {
     (RFace->BR)->(RFace->BR) + -- Opposite Face
     (BFace->TL)->(BFace->TL) +
     (BFace->TM)->(BFace->TM) +
-    (BFace->TR)->(BFace->TR) +
+    (BFace->TR)->(UFace->BL) + --
     (BFace->ML)->(BFace->ML) +
-    (BFace->MR)->(BFace->MR) +
+    (BFace->MR)->(UFace->ML) + --
     (BFace->BL)->(BFace->BL) +
     (BFace->BM)->(BFace->BM) +
-    (BFace->BR)->(BFace->BR) +
-    (DFace->TL)->(DFace->TL) +
+    (BFace->BR)->(UFace->TL) + --
+    (DFace->TL)->(BFace->BR) + --
     (DFace->TM)->(DFace->TM) +
     (DFace->TR)->(DFace->TR) +
-    (DFace->ML)->(DFace->ML) +
+    (DFace->ML)->(BFace->MR) + --
     (DFace->MR)->(DFace->MR) +
-    (DFace->BL)->(DFace->BL) +
+    (DFace->BL)->(BFace->TR) + --
     (DFace->BM)->(DFace->BM) +
     (DFace->BR)->(DFace->BR)
 
@@ -188,20 +219,20 @@ pred rotations {
     RFace.rot =
     (UFace->TL)->(UFace->TL) +
     (UFace->TM)->(UFace->TM) +
-    (UFace->TR)->(UFace->TR) +
+    (UFace->TR)->(BFace->BL) + --
     (UFace->ML)->(UFace->ML) +
-    (UFace->MR)->(UFace->MR) +
+    (UFace->MR)->(BFace->ML) + --
     (UFace->BL)->(UFace->BL) +
     (UFace->BM)->(UFace->BM) +
-    (UFace->BR)->(UFace->BR) +
+    (UFace->BR)->(BFace->TL) + --
     (FFace->TL)->(FFace->TL) +
     (FFace->TM)->(FFace->TM) +
-    (FFace->TR)->(FFace->TR) +
+    (FFace->TR)->(UFace->TR) + --
     (FFace->ML)->(FFace->ML) +
-    (FFace->MR)->(FFace->MR) +
+    (FFace->MR)->(UFace->MR) + --
     (FFace->BL)->(FFace->BL) +
     (FFace->BM)->(FFace->BM) +
-    (FFace->BR)->(FFace->BR) +
+    (FFace->BR)->(UFace->BR) + --
     (LFace->TL)->(LFace->TL) + -- Opposite Face
     (LFace->TM)->(LFace->TM) + -- Opposite Face
     (LFace->TR)->(LFace->TR) + -- Opposite Face
@@ -218,28 +249,28 @@ pred rotations {
     (RFace->BL)->(RFace->TL) + -- Current Face
     (RFace->BM)->(RFace->ML) + -- Current Face
     (RFace->BR)->(RFace->BL) + -- Current Face
-    (BFace->TL)->(BFace->TL) +
+    (BFace->TL)->(DFace->BR) + --
     (BFace->TM)->(BFace->TM) +
     (BFace->TR)->(BFace->TR) +
-    (BFace->ML)->(BFace->ML) +
+    (BFace->ML)->(DFace->MR) + --
     (BFace->MR)->(BFace->MR) +
-    (BFace->BL)->(BFace->BL) +
+    (BFace->BL)->(DFace->TR) + --
     (BFace->BM)->(BFace->BM) +
     (BFace->BR)->(BFace->BR) +
     (DFace->TL)->(DFace->TL) +
     (DFace->TM)->(DFace->TM) +
-    (DFace->TR)->(DFace->TR) +
+    (DFace->TR)->(FFace->TR) + --
     (DFace->ML)->(DFace->ML) +
-    (DFace->MR)->(DFace->MR) +
+    (DFace->MR)->(FFace->MR) + --
     (DFace->BL)->(DFace->BL) +
     (DFace->BM)->(DFace->BM) +
-    (DFace->BR)->(DFace->BR)
+    (DFace->BR)->(FFace->BR)   --
 
     --- BFace Rotations
     BFace.rot =
-    (UFace->TL)->(UFace->TL) +
-    (UFace->TM)->(UFace->TM) +
-    (UFace->TR)->(UFace->TR) +
+    (UFace->TL)->(LFace->BL) + --
+    (UFace->TM)->(LFace->ML) + --
+    (UFace->TR)->(LFace->TL) + --
     (UFace->ML)->(UFace->ML) +
     (UFace->MR)->(UFace->MR) +
     (UFace->BL)->(UFace->BL) +
@@ -253,22 +284,22 @@ pred rotations {
     (FFace->BL)->(FFace->BL) + -- Opposite Face
     (FFace->BM)->(FFace->BM) + -- Opposite Face
     (FFace->BR)->(FFace->BR) + -- Opposite Face
-    (LFace->TL)->(LFace->TL) +
+    (LFace->TL)->(DFace->BL) + --
     (LFace->TM)->(LFace->TM) +
     (LFace->TR)->(LFace->TR) +
-    (LFace->ML)->(LFace->ML) +
+    (LFace->ML)->(DFace->BM) + --
     (LFace->MR)->(LFace->MR) +
-    (LFace->BL)->(LFace->BL) +
+    (LFace->BL)->(DFace->BR) + --
     (LFace->BM)->(LFace->BM) +
     (LFace->BR)->(LFace->BR) +
     (RFace->TL)->(RFace->TL) +
     (RFace->TM)->(RFace->TM) +
-    (RFace->TR)->(RFace->TR) +
+    (RFace->TR)->(UFace->TL) + --
     (RFace->ML)->(RFace->ML) +
-    (RFace->MR)->(RFace->MR) +
+    (RFace->MR)->(UFace->TM) + --
     (RFace->BL)->(RFace->BL) +
     (RFace->BM)->(RFace->BM) +
-    (RFace->BR)->(RFace->BR) +
+    (RFace->BR)->(UFace->TR) + --
     (BFace->TL)->(BFace->TR) + -- Current Face
     (BFace->TM)->(BFace->MR) + -- Current Face
     (BFace->TR)->(BFace->BR) + -- Current Face
@@ -282,9 +313,9 @@ pred rotations {
     (DFace->TR)->(DFace->TR) +
     (DFace->ML)->(DFace->ML) +
     (DFace->MR)->(DFace->MR) +
-    (DFace->BL)->(DFace->BL) +
-    (DFace->BM)->(DFace->BM) +
-    (DFace->BR)->(DFace->BR)
+    (DFace->BL)->(RFace->BR) + --
+    (DFace->BM)->(RFace->MR) + --
+    (DFace->BR)->(RFace->TR)   --
 
     --- DFace Rotations
     DFace.rot =
@@ -301,33 +332,33 @@ pred rotations {
     (FFace->TR)->(FFace->TR) +
     (FFace->ML)->(FFace->ML) +
     (FFace->MR)->(FFace->MR) +
-    (FFace->BL)->(FFace->BL) +
-    (FFace->BM)->(FFace->BM) +
-    (FFace->BR)->(FFace->BR) +
+    (FFace->BL)->(RFace->BL) + --
+    (FFace->BM)->(RFace->BM) + --
+    (FFace->BR)->(RFace->BR) + --
     (LFace->TL)->(LFace->TL) +
     (LFace->TM)->(LFace->TM) +
     (LFace->TR)->(LFace->TR) +
     (LFace->ML)->(LFace->ML) +
     (LFace->MR)->(LFace->MR) +
-    (LFace->BL)->(LFace->BL) +
-    (LFace->BM)->(LFace->BM) +
-    (LFace->BR)->(LFace->BR) +
+    (LFace->BL)->(FFace->BL) + --
+    (LFace->BM)->(FFace->BM) + --
+    (LFace->BR)->(FFace->BR) + --
     (RFace->TL)->(RFace->TL) +
     (RFace->TM)->(RFace->TM) +
     (RFace->TR)->(RFace->TR) +
     (RFace->ML)->(RFace->ML) +
     (RFace->MR)->(RFace->MR) +
-    (RFace->BL)->(RFace->BL) +
-    (RFace->BM)->(RFace->BM) +
-    (RFace->BR)->(RFace->BR) +
+    (RFace->BL)->(BFace->BL) + --
+    (RFace->BM)->(BFace->BM) + --
+    (RFace->BR)->(BFace->BR) + --
     (BFace->TL)->(BFace->TL) +
     (BFace->TM)->(BFace->TM) +
     (BFace->TR)->(BFace->TR) +
     (BFace->ML)->(BFace->ML) +
     (BFace->MR)->(BFace->MR) +
-    (BFace->BL)->(BFace->BL) +
-    (BFace->BM)->(BFace->BM) +
-    (BFace->BR)->(BFace->BR) +
+    (BFace->BL)->(LFace->BL) + --
+    (BFace->BM)->(LFace->BM) + --
+    (BFace->BR)->(LFace->BR) + --
     (DFace->TL)->(DFace->TR) + -- Current Face
     (DFace->TM)->(DFace->MR) + -- Current Face
     (DFace->TR)->(DFace->BR) + -- Current Face
@@ -337,8 +368,6 @@ pred rotations {
     (DFace->BM)->(DFace->ML) + -- Current Face
     (DFace->BR)->(DFace->BL)   -- Current Face
 }
-
-one sig UFace, FFace, LFace, RFace, BFace, DFace extends Face {}
 
 pred orientations {
 	-- Toup, todown, etc	
@@ -373,14 +402,10 @@ pred orientations {
 	DFace.todown = BFace
 }
 
-pred rotations {
-    rot =
-}
-
 pred basics {
 	orientations
+	rotations
 
-	-- ADD HARD-CODING OF FACE FIELDS HERE (TOUP, TODOWN, ETC.)
 	UFace.center = White
 	FFace.center = Green
 	LFace.center = Orange
@@ -406,6 +431,16 @@ pred solved {
 	}
 }
 
+pred solved_stutter {
+	solved
+	stickers' = stickers
+}
 
+pred traces {
+	basics
+	not solved
+	always(not solved iff {some f: Face | rotate[f]})
+	always(not solved implies eventually always solved)
+}
 
-run { basics solved }
+run { traces }
