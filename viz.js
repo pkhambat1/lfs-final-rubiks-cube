@@ -1,7 +1,9 @@
 d3.select(svg).selectAll("*").remove();
 
-const FACE_SIDE = 60;
+const FACE_SIDE = 120;
 const STICKER_SIDE = FACE_SIDE / 3;
+const MARGIN_LEFT = 30;
+const MARGIN_TOP = 30;
 
 const WHITE = '#FFFFFF';
 const GREEN = '#00FF00';
@@ -59,13 +61,20 @@ function printStickersForFace(x, y, face) {
     for (col = 0; col < 3; col++) {
        svgSelect
          .append("rect")         // append a rectangle element to the selected element (the svg)
-         .attr("x", x + col*STICKER_SIDE)          // give the rect an x coordinate
-         .attr("y", y + row*STICKER_SIDE)          // give the rect a y coordinate
-         .attr("width", STICKER_SIDE - 2)     // give the rect a width
-         .attr("height", STICKER_SIDE - 2)    // give the rect a height
-         .style("fill", stickerMap[[face, row, col]]);  
+         .attr("x", MARGIN_LEFT + x + col * STICKER_SIDE)          // give the rect an x coordinate
+         .attr("y", MARGIN_TOP + y + row * STICKER_SIDE)          // give the rect a y coordinate
+         .attr("width", STICKER_SIDE)     // give the rect a width
+         .attr("height", STICKER_SIDE)    // give the rect a height
+         .style("fill", stickerMap[[face, row, col]])
+         .style("stroke-width", 1)
+         .style("stroke", '#000000');
     }
   }
 }
 
-printStickersForFace(50, 50, UFace0)
+printStickersForFace(FACE_SIDE, 0, "UFace0")
+printStickersForFace(0, FACE_SIDE, "LFace0")
+printStickersForFace(FACE_SIDE, FACE_SIDE, "FFace0")
+printStickersForFace(FACE_SIDE * 2, FACE_SIDE, "RFace0")
+printStickersForFace(FACE_SIDE * 3, FACE_SIDE, "BFace0")
+printStickersForFace(FACE_SIDE, FACE_SIDE * 2, "DFace0")
