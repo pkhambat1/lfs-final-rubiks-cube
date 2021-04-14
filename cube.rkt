@@ -2,7 +2,7 @@
 
 option problem_type temporal
 -- option min_tracelength 4
-option max_tracelength 7
+option max_tracelength 4
 
 abstract sig Color {}
 one sig White, Green, Orange, Red, Blue, Yellow extends Color {}
@@ -430,9 +430,11 @@ pred basics {
 	}
 }
 
+/*
 test expect {
 	eightStickersPerFace : {basics implies (all f : Face | #(f.stickers) = 8)} is theorem
 }
+*/
 
 pred solved {
 	all face: Face | {
@@ -469,6 +471,7 @@ pred scramble{
 }
 
 -- not actually a scramble (to be fixed next time)
+/*
 inst two_step_scramble {
 	Green = Green0
 	RFace = RFace0
@@ -501,6 +504,9 @@ inst two_step_scramble {
 	todown = UFace0->FFace0 + FFace0->DFace0 + LFace0->DFace0 + RFace0->DFace0 + BFace0->DFace0 + DFace0->BFace0
 	toleft = UFace0->LFace0 + FFace0->LFace0 + LFace0->BFace0 + RFace0->FFace0 + BFace0->RFace0 + DFace0->LFace0
 }
+*/
 
 -- this tries to solve a scramble that is two rotations away from solved (once the instance is fixed)
-run { traces } for two_step_scramble
+-- run { traces } for two_step_scramble
+
+run { scramble }
