@@ -2,7 +2,7 @@
 
 option problem_type temporal
 -- option min_tracelength 4
-option max_tracelength 4
+option max_tracelength 27
 
 abstract sig Color {}
 one sig White, Green, Orange, Red, Blue, Yellow extends Color {}
@@ -13,10 +13,12 @@ one sig TL, TM, TR, ML, MR, BL, BM, BR extends Position {}
 abstract sig Face {
 	center: one Color,
 	var stickers: set Position->Color,
+	/*
 	toup: one Face,
 	todown: one Face,
 	toleft: one Face,
 	toright: one Face,
+	*/
 	rot: set Face->Position->Face->Position
 }
 
@@ -378,6 +380,7 @@ pred rotations {
     (DFace->BR)->(DFace->BL)   -- Current Face
 }
 
+/*
 pred orientations {
 	-- Toup, todown, etc	
 	UFace.toup = BFace
@@ -410,9 +413,10 @@ pred orientations {
 	DFace.toleft = LFace
 	DFace.todown = BFace
 }
+*/
 
 pred basics {
-	orientations
+	--orientations
 	rotations
 
 	UFace.center = White
@@ -470,43 +474,169 @@ pred scramble{
 	--always(all f: Face | counter_rotate[f] implies not after rotate[f])
 }
 
--- not actually a scramble (to be fixed next time)
-/*
-inst two_step_scramble {
-	Green = Green0
-	RFace = RFace0
-	FFace = FFace0
-	Yellow = Yellow0
-	Blue = Blue0
-	UFace = UFace0
-	BR = BR0
-	LFace = LFace0
-	Red = Red0
-	BL = BL0
-	White = White0
-	TM = TM0
-	MR = MR0
-	TR = TR0
-	BM = BM0
-	BFace = BFace0
-	Orange = Orange0
-	TL = TL0
-	DFace = DFace0
-	ML = ML0
-	Color = Green0 + Yellow0 + Blue0 + Red0 + White0 + Orange0
-	Face = RFace0 + FFace0 + UFace0 + LFace0 + BFace0 + DFace0
-	Position = BR0 + BL0 + TM0 + MR0 + TR0 + BM0 + TL0 + ML0
-	rot = UFace0->UFace0->TL0->UFace0->TR0 + UFace0->UFace0->TM0->UFace0->MR0 + UFace0->UFace0->TR0->UFace0->BR0 + UFace0->UFace0->ML0->UFace0->TM0 + UFace0->UFace0->MR0->UFace0->BM0 + UFace0->UFace0->BL0->UFace0->TL0 + UFace0->UFace0->BM0->UFace0->ML0 + UFace0->UFace0->BR0->UFace0->BL0 + UFace0->FFace0->TL0->LFace0->TL0 + UFace0->FFace0->TM0->LFace0->TM0 + UFace0->FFace0->TR0->LFace0->TR0 + UFace0->FFace0->ML0->FFace0->ML0 + UFace0->FFace0->MR0->FFace0->MR0 + UFace0->FFace0->BL0->FFace0->BL0 + UFace0->FFace0->BM0->FFace0->BM0 + UFace0->FFace0->BR0->FFace0->BR0 + UFace0->LFace0->TL0->BFace0->TL0 + UFace0->LFace0->TM0->BFace0->TM0 + UFace0->LFace0->TR0->BFace0->TR0 + UFace0->LFace0->ML0->LFace0->ML0 + UFace0->LFace0->MR0->LFace0->MR0 + UFace0->LFace0->BL0->LFace0->BL0 + UFace0->LFace0->BM0->LFace0->BM0 + UFace0->LFace0->BR0->LFace0->BR0 + UFace0->RFace0->TL0->FFace0->TL0 + UFace0->RFace0->TM0->FFace0->TM0 + UFace0->RFace0->TR0->FFace0->TR0 + UFace0->RFace0->ML0->RFace0->ML0 + UFace0->RFace0->MR0->RFace0->MR0 + UFace0->RFace0->BL0->RFace0->BL0 + UFace0->RFace0->BM0->RFace0->BM0 + UFace0->RFace0->BR0->RFace0->BR0 + UFace0->BFace0->TL0->RFace0->TL0 + UFace0->BFace0->TM0->RFace0->TM0 + UFace0->BFace0->TR0->RFace0->TR0 + UFace0->BFace0->ML0->BFace0->ML0 + UFace0->BFace0->MR0->BFace0->MR0 + UFace0->BFace0->BL0->BFace0->BL0 + UFace0->BFace0->BM0->BFace0->BM0 + UFace0->BFace0->BR0->BFace0->BR0 + UFace0->DFace0->TL0->DFace0->TL0 + UFace0->DFace0->TM0->DFace0->TM0 + UFace0->DFace0->TR0->DFace0->TR0 + UFace0->DFace0->ML0->DFace0->ML0 + UFace0->DFace0->MR0->DFace0->MR0 + UFace0->DFace0->BL0->DFace0->BL0 + UFace0->DFace0->BM0->DFace0->BM0 + UFace0->DFace0->BR0->DFace0->BR0 + FFace0->UFace0->TL0->UFace0->TL0 + FFace0->UFace0->TM0->UFace0->TM0 + FFace0->UFace0->TR0->UFace0->TR0 + FFace0->UFace0->ML0->UFace0->ML0 + FFace0->UFace0->MR0->UFace0->MR0 + FFace0->UFace0->BL0->RFace0->TL0 + FFace0->UFace0->BM0->RFace0->ML0 + FFace0->UFace0->BR0->RFace0->BL0 + FFace0->FFace0->TL0->FFace0->TR0 + FFace0->FFace0->TM0->FFace0->MR0 + FFace0->FFace0->TR0->FFace0->BR0 + FFace0->FFace0->ML0->FFace0->TM0 + FFace0->FFace0->MR0->FFace0->BM0 + FFace0->FFace0->BL0->FFace0->TL0 + FFace0->FFace0->BM0->FFace0->ML0 + FFace0->FFace0->BR0->FFace0->BL0 + FFace0->LFace0->TL0->LFace0->TL0 + FFace0->LFace0->TM0->LFace0->TM0 + FFace0->LFace0->TR0->UFace0->BR0 + FFace0->LFace0->ML0->LFace0->ML0 + FFace0->LFace0->MR0->UFace0->BM0 + FFace0->LFace0->BL0->LFace0->BL0 + FFace0->LFace0->BM0->LFace0->BM0 + FFace0->LFace0->BR0->UFace0->BL0 + FFace0->RFace0->TL0->DFace0->TR0 + FFace0->RFace0->TM0->RFace0->TM0 + FFace0->RFace0->TR0->RFace0->TR0 + FFace0->RFace0->ML0->DFace0->TM0 + FFace0->RFace0->MR0->RFace0->MR0 + FFace0->RFace0->BL0->DFace0->TL0 + FFace0->RFace0->BM0->RFace0->BM0 + FFace0->RFace0->BR0->RFace0->BR0 + FFace0->BFace0->TL0->BFace0->TL0 + FFace0->BFace0->TM0->BFace0->TM0 + FFace0->BFace0->TR0->BFace0->TR0 + FFace0->BFace0->ML0->BFace0->ML0 + FFace0->BFace0->MR0->BFace0->MR0 + FFace0->BFace0->BL0->BFace0->BL0 + FFace0->BFace0->BM0->BFace0->BM0 + FFace0->BFace0->BR0->BFace0->BR0 + FFace0->DFace0->TL0->LFace0->TR0 + FFace0->DFace0->TM0->LFace0->MR0 + FFace0->DFace0->TR0->LFace0->BR0 + FFace0->DFace0->ML0->DFace0->ML0 + FFace0->DFace0->MR0->DFace0->MR0 + FFace0->DFace0->BL0->DFace0->BL0 + FFace0->DFace0->BM0->DFace0->BM0 + FFace0->DFace0->BR0->DFace0->BR0 + LFace0->UFace0->TL0->FFace0->TL0 + LFace0->UFace0->TM0->UFace0->TM0 + LFace0->UFace0->TR0->UFace0->TR0 + LFace0->UFace0->ML0->FFace0->ML0 + LFace0->UFace0->MR0->UFace0->MR0 + LFace0->UFace0->BL0->FFace0->BL0 + LFace0->UFace0->BM0->UFace0->BM0 + LFace0->UFace0->BR0->UFace0->BR0 + LFace0->FFace0->TL0->DFace0->TL0 + LFace0->FFace0->TM0->FFace0->TM0 + LFace0->FFace0->TR0->FFace0->TR0 + LFace0->FFace0->ML0->DFace0->ML0 + LFace0->FFace0->MR0->FFace0->MR0 + LFace0->FFace0->BL0->DFace0->BL0 + LFace0->FFace0->BM0->FFace0->BM0 + LFace0->FFace0->BR0->FFace0->BR0 + LFace0->LFace0->TL0->LFace0->TR0 + LFace0->LFace0->TM0->LFace0->MR0 + LFace0->LFace0->TR0->LFace0->BR0 + LFace0->LFace0->ML0->LFace0->TM0 + LFace0->LFace0->MR0->LFace0->BM0 + LFace0->LFace0->BL0->LFace0->TL0 + LFace0->LFace0->BM0->LFace0->ML0 + LFace0->LFace0->BR0->LFace0->BL0 + LFace0->RFace0->TL0->RFace0->TL0 + LFace0->RFace0->TM0->RFace0->TM0 + LFace0->RFace0->TR0->RFace0->TR0 + LFace0->RFace0->ML0->RFace0->ML0 + LFace0->RFace0->MR0->RFace0->MR0 + LFace0->RFace0->BL0->RFace0->BL0 + LFace0->RFace0->BM0->RFace0->BM0 + LFace0->RFace0->BR0->RFace0->BR0 + LFace0->BFace0->TL0->BFace0->TL0 + LFace0->BFace0->TM0->BFace0->TM0 + LFace0->BFace0->TR0->UFace0->BL0 + LFace0->BFace0->ML0->BFace0->ML0 + LFace0->BFace0->MR0->UFace0->ML0 + LFace0->BFace0->BL0->BFace0->BL0 + LFace0->BFace0->BM0->BFace0->BM0 + LFace0->BFace0->BR0->UFace0->TL0 + LFace0->DFace0->TL0->BFace0->BR0 + LFace0->DFace0->TM0->DFace0->TM0 + LFace0->DFace0->TR0->DFace0->TR0 + LFace0->DFace0->ML0->BFace0->MR0 + LFace0->DFace0->MR0->DFace0->MR0 + LFace0->DFace0->BL0->BFace0->TR0 + LFace0->DFace0->BM0->DFace0->BM0 + LFace0->DFace0->BR0->DFace0->BR0 + RFace0->UFace0->TL0->UFace0->TL0 + RFace0->UFace0->TM0->UFace0->TM0 + RFace0->UFace0->TR0->BFace0->BL0 + RFace0->UFace0->ML0->UFace0->ML0 + RFace0->UFace0->MR0->BFace0->ML0 + RFace0->UFace0->BL0->UFace0->BL0 + RFace0->UFace0->BM0->UFace0->BM0 + RFace0->UFace0->BR0->BFace0->TL0 + RFace0->FFace0->TL0->FFace0->TL0 + RFace0->FFace0->TM0->FFace0->TM0 + RFace0->FFace0->TR0->UFace0->TR0 + RFace0->FFace0->ML0->FFace0->ML0 + RFace0->FFace0->MR0->UFace0->MR0 + RFace0->FFace0->BL0->FFace0->BL0 + RFace0->FFace0->BM0->FFace0->BM0 + RFace0->FFace0->BR0->UFace0->BR0 + RFace0->LFace0->TL0->LFace0->TL0 + RFace0->LFace0->TM0->LFace0->TM0 + RFace0->LFace0->TR0->LFace0->TR0 + RFace0->LFace0->ML0->LFace0->ML0 + RFace0->LFace0->MR0->LFace0->MR0 + RFace0->LFace0->BL0->LFace0->BL0 + RFace0->LFace0->BM0->LFace0->BM0 + RFace0->LFace0->BR0->LFace0->BR0 + RFace0->RFace0->TL0->RFace0->TR0 + RFace0->RFace0->TM0->RFace0->MR0 + RFace0->RFace0->TR0->RFace0->BR0 + RFace0->RFace0->ML0->RFace0->TM0 + RFace0->RFace0->MR0->RFace0->BM0 + RFace0->RFace0->BL0->RFace0->TL0 + RFace0->RFace0->BM0->RFace0->ML0 + RFace0->RFace0->BR0->RFace0->BL0 + RFace0->BFace0->TL0->DFace0->BR0 + RFace0->BFace0->TM0->BFace0->TM0 + RFace0->BFace0->TR0->BFace0->TR0 + RFace0->BFace0->ML0->DFace0->MR0 + RFace0->BFace0->MR0->BFace0->MR0 + RFace0->BFace0->BL0->DFace0->TR0 + RFace0->BFace0->BM0->BFace0->BM0 + RFace0->BFace0->BR0->BFace0->BR0 + RFace0->DFace0->TL0->DFace0->TL0 + RFace0->DFace0->TM0->DFace0->TM0 + RFace0->DFace0->TR0->FFace0->TR0 + RFace0->DFace0->ML0->DFace0->ML0 + RFace0->DFace0->MR0->FFace0->MR0 + RFace0->DFace0->BL0->DFace0->BL0 + RFace0->DFace0->BM0->DFace0->BM0 + RFace0->DFace0->BR0->FFace0->BR0 + BFace0->UFace0->TL0->LFace0->BL0 + BFace0->UFace0->TM0->LFace0->ML0 + BFace0->UFace0->TR0->LFace0->TL0 + BFace0->UFace0->ML0->UFace0->ML0 + BFace0->UFace0->MR0->UFace0->MR0 + BFace0->UFace0->BL0->UFace0->BL0 + BFace0->UFace0->BM0->UFace0->BM0 + BFace0->UFace0->BR0->UFace0->BR0 + BFace0->FFace0->TL0->FFace0->TL0 + BFace0->FFace0->TM0->FFace0->TM0 + BFace0->FFace0->TR0->FFace0->TR0 + BFace0->FFace0->ML0->FFace0->ML0 + BFace0->FFace0->MR0->FFace0->MR0 + BFace0->FFace0->BL0->FFace0->BL0 + BFace0->FFace0->BM0->FFace0->BM0 + BFace0->FFace0->BR0->FFace0->BR0 + BFace0->LFace0->TL0->DFace0->BL0 + BFace0->LFace0->TM0->LFace0->TM0 + BFace0->LFace0->TR0->LFace0->TR0 + BFace0->LFace0->ML0->DFace0->BM0 + BFace0->LFace0->MR0->LFace0->MR0 + BFace0->LFace0->BL0->DFace0->BR0 + BFace0->LFace0->BM0->LFace0->BM0 + BFace0->LFace0->BR0->LFace0->BR0 + BFace0->RFace0->TL0->RFace0->TL0 + BFace0->RFace0->TM0->RFace0->TM0 + BFace0->RFace0->TR0->UFace0->TL0 + BFace0->RFace0->ML0->RFace0->ML0 + BFace0->RFace0->MR0->UFace0->TM0 + BFace0->RFace0->BL0->RFace0->BL0 + BFace0->RFace0->BM0->RFace0->BM0 + BFace0->RFace0->BR0->UFace0->TR0 + BFace0->BFace0->TL0->BFace0->TR0 + BFace0->BFace0->TM0->BFace0->MR0 + BFace0->BFace0->TR0->BFace0->BR0 + BFace0->BFace0->ML0->BFace0->TM0 + BFace0->BFace0->MR0->BFace0->BM0 + BFace0->BFace0->BL0->BFace0->TL0 + BFace0->BFace0->BM0->BFace0->ML0 + BFace0->BFace0->BR0->BFace0->BL0 + BFace0->DFace0->TL0->DFace0->TL0 + BFace0->DFace0->TM0->DFace0->TM0 + BFace0->DFace0->TR0->DFace0->TR0 + BFace0->DFace0->ML0->DFace0->ML0 + BFace0->DFace0->MR0->DFace0->MR0 + BFace0->DFace0->BL0->RFace0->BR0 + BFace0->DFace0->BM0->RFace0->MR0 + BFace0->DFace0->BR0->RFace0->TR0 + DFace0->UFace0->TL0->UFace0->TL0 + DFace0->UFace0->TM0->UFace0->TM0 + DFace0->UFace0->TR0->UFace0->TR0 + DFace0->UFace0->ML0->UFace0->ML0 + DFace0->UFace0->MR0->UFace0->MR0 + DFace0->UFace0->BL0->UFace0->BL0 + DFace0->UFace0->BM0->UFace0->BM0 + DFace0->UFace0->BR0->UFace0->BR0 + DFace0->FFace0->TL0->FFace0->TL0 + DFace0->FFace0->TM0->FFace0->TM0 + DFace0->FFace0->TR0->FFace0->TR0 + DFace0->FFace0->ML0->FFace0->ML0 + DFace0->FFace0->MR0->FFace0->MR0 + DFace0->FFace0->BL0->RFace0->BL0 + DFace0->FFace0->BM0->RFace0->BM0 + DFace0->FFace0->BR0->RFace0->BR0 + DFace0->LFace0->TL0->LFace0->TL0 + DFace0->LFace0->TM0->LFace0->TM0 + DFace0->LFace0->TR0->LFace0->TR0 + DFace0->LFace0->ML0->LFace0->ML0 + DFace0->LFace0->MR0->LFace0->MR0 + DFace0->LFace0->BL0->FFace0->BL0 + DFace0->LFace0->BM0->FFace0->BM0 + DFace0->LFace0->BR0->FFace0->BR0 + DFace0->RFace0->TL0->RFace0->TL0 + DFace0->RFace0->TM0->RFace0->TM0 + DFace0->RFace0->TR0->RFace0->TR0 + DFace0->RFace0->ML0->RFace0->ML0 + DFace0->RFace0->MR0->RFace0->MR0 + DFace0->RFace0->BL0->BFace0->BL0 + DFace0->RFace0->BM0->BFace0->BM0 + DFace0->RFace0->BR0->BFace0->BR0 + DFace0->BFace0->TL0->BFace0->TL0 + DFace0->BFace0->TM0->BFace0->TM0 + DFace0->BFace0->TR0->BFace0->TR0 + DFace0->BFace0->ML0->BFace0->ML0 + DFace0->BFace0->MR0->BFace0->MR0 + DFace0->BFace0->BL0->LFace0->BL0 + DFace0->BFace0->BM0->LFace0->BM0 + DFace0->BFace0->BR0->LFace0->BR0 + DFace0->DFace0->TL0->DFace0->TR0 + DFace0->DFace0->TM0->DFace0->MR0 + DFace0->DFace0->TR0->DFace0->BR0 + DFace0->DFace0->ML0->DFace0->TM0 + DFace0->DFace0->MR0->DFace0->BM0 + DFace0->DFace0->BL0->DFace0->TL0 + DFace0->DFace0->BM0->DFace0->ML0 + DFace0->DFace0->BR0->DFace0->BL0
-	stickers = UFace0->TL0->White0 + UFace0->TM0->White0 + UFace0->TR0->White0 + UFace0->ML0->White0 + UFace0->MR0->White0 + UFace0->BL0->White0 + UFace0->BM0->White0 + UFace0->BR0->White0 + FFace0->TL0->Green0 + FFace0->TM0->Green0 + FFace0->TR0->Green0 + FFace0->ML0->Green0 + FFace0->MR0->Green0 + FFace0->BL0->Green0 + FFace0->BM0->Green0 + FFace0->BR0->Green0 + LFace0->TL0->Orange0 + LFace0->TM0->Orange0 + LFace0->TR0->Orange0 + LFace0->ML0->Orange0 + LFace0->MR0->Orange0 + LFace0->BL0->Orange0 + LFace0->BM0->Orange0 + LFace0->BR0->Orange0 + RFace0->TL0->Red0 + RFace0->TM0->Red0 + RFace0->TR0->Red0 + RFace0->ML0->Red0 + RFace0->MR0->Red0 + RFace0->BL0->Red0 + RFace0->BM0->Red0 + RFace0->BR0->Red0 + BFace0->TL0->Blue0 + BFace0->TM0->Blue0 + BFace0->TR0->Blue0 + BFace0->ML0->Blue0 + BFace0->MR0->Blue0 + BFace0->BL0->Blue0 + BFace0->BM0->Blue0 + BFace0->BR0->Blue0 + DFace0->TL0->Yellow0 + DFace0->TM0->Yellow0 + DFace0->TR0->Yellow0 + DFace0->ML0->Yellow0 + DFace0->MR0->Yellow0 + DFace0->BL0->Yellow0 + DFace0->BM0->Yellow0 + DFace0->BR0->Yellow0
-	center = UFace0->White0 + FFace0->Green0 + LFace0->Orange0 + RFace0->Red0 + BFace0->Blue0 + DFace0->Yellow0
-	toup = UFace0->BFace0 + FFace0->UFace0 + LFace0->UFace0 + RFace0->UFace0 + BFace0->UFace0 + DFace0->FFace0
-	toright = UFace0->RFace0 + FFace0->RFace0 + LFace0->FFace0 + RFace0->BFace0 + BFace0->LFace0 + DFace0->RFace0
-	todown = UFace0->FFace0 + FFace0->DFace0 + LFace0->DFace0 + RFace0->DFace0 + BFace0->DFace0 + DFace0->BFace0
-	toleft = UFace0->LFace0 + FFace0->LFace0 + LFace0->BFace0 + RFace0->FFace0 + BFace0->RFace0 + DFace0->LFace0
+-- Scramble used: R U
+pred sticker_based_2_step_scramble {
+	get_sticker_color[stickers, UFace->TL] = White
+	get_sticker_color[stickers, UFace->TM] = White
+	get_sticker_color[stickers, UFace->TR] = White
+	get_sticker_color[stickers, UFace->ML] = White
+	get_sticker_color[stickers, UFace->MR] = White
+	get_sticker_color[stickers, UFace->BL] = Green
+	get_sticker_color[stickers, UFace->BM] = Green
+	get_sticker_color[stickers, UFace->BR] = Green
+	get_sticker_color[stickers, LFace->TL] = Green
+	get_sticker_color[stickers, LFace->TM] = Green
+	get_sticker_color[stickers, LFace->TR] = Yellow
+	get_sticker_color[stickers, LFace->ML] = Orange
+	get_sticker_color[stickers, LFace->MR] = Orange
+	get_sticker_color[stickers, LFace->BL] = Orange
+	get_sticker_color[stickers, LFace->BM] = Orange
+	get_sticker_color[stickers, LFace->BR] = Orange
+	get_sticker_color[stickers, FFace->TL] = Red
+	get_sticker_color[stickers, FFace->TM] = Red
+	get_sticker_color[stickers, FFace->TR] = Red
+	get_sticker_color[stickers, FFace->ML] = Green
+	get_sticker_color[stickers, FFace->MR] = Yellow
+	get_sticker_color[stickers, FFace->BL] = Green
+	get_sticker_color[stickers, FFace->BM] = Green
+	get_sticker_color[stickers, FFace->BR] = Yellow
+	get_sticker_color[stickers, RFace->TL] = White
+	get_sticker_color[stickers, RFace->TM] = Blue
+	get_sticker_color[stickers, RFace->TR] = Blue
+	get_sticker_color[stickers, RFace->ML] = Red
+	get_sticker_color[stickers, RFace->MR] = Red
+	get_sticker_color[stickers, RFace->BL] = Red
+	get_sticker_color[stickers, RFace->BM] = Red
+	get_sticker_color[stickers, RFace->BR] = Red
+	get_sticker_color[stickers, BFace->TL] = Orange
+	get_sticker_color[stickers, BFace->TM] = Orange
+	get_sticker_color[stickers, BFace->TR] = Orange
+	get_sticker_color[stickers, BFace->ML] = White
+	get_sticker_color[stickers, BFace->MR] = Blue
+	get_sticker_color[stickers, BFace->BL] = White
+	get_sticker_color[stickers, BFace->BM] = Blue
+	get_sticker_color[stickers, BFace->BR] = Blue
+	get_sticker_color[stickers, DFace->TL] = Yellow
+	get_sticker_color[stickers, DFace->TM] = Yellow
+	get_sticker_color[stickers, DFace->TR] = Blue
+	get_sticker_color[stickers, DFace->ML] = Yellow
+	get_sticker_color[stickers, DFace->MR] = Blue
+	get_sticker_color[stickers, DFace->BL] = Yellow
+	get_sticker_color[stickers, DFace->BM] = Yellow
+	get_sticker_color[stickers, DFace->BR] = Blue
 }
-*/
 
--- this tries to solve a scramble that is two rotations away from solved (once the instance is fixed)
--- run { traces } for two_step_scramble
+-- WARNING:
+-- The predicate below requires some changes to our predicates as they are currently defined
+-- We should discuss which version we like more next time we meet!
+pred move_based_2_step_scramble {
+	solved
+	rotate[RFace]
+	after rotate[UFace]
+}
 
-run { scramble }
+-- Scramble used: R L U R D'
+pred sticker_based_5_step_scramble {
+	get_sticker_color[stickers, UFace->TL] = Blue
+	get_sticker_color[stickers, UFace->TM] = Blue
+	get_sticker_color[stickers, UFace->TR] = Red
+	get_sticker_color[stickers, UFace->ML] = White
+	get_sticker_color[stickers, UFace->MR] = Yellow
+	get_sticker_color[stickers, UFace->BL] = Green
+	get_sticker_color[stickers, UFace->BM] = Green
+	get_sticker_color[stickers, UFace->BR] = Yellow
+	get_sticker_color[stickers, LFace->TL] = White
+	get_sticker_color[stickers, LFace->TM] = Green
+	get_sticker_color[stickers, LFace->TR] = Yellow
+	get_sticker_color[stickers, LFace->ML] = Orange
+	get_sticker_color[stickers, LFace->MR] = Orange
+	get_sticker_color[stickers, LFace->BL] = White
+	get_sticker_color[stickers, LFace->BM] = Green
+	get_sticker_color[stickers, LFace->BR] = Blue
+	get_sticker_color[stickers, FFace->TL] = Red
+	get_sticker_color[stickers, FFace->TM] = Red
+	get_sticker_color[stickers, FFace->TR] = Blue
+	get_sticker_color[stickers, FFace->ML] = White
+	get_sticker_color[stickers, FFace->MR] = Blue
+	get_sticker_color[stickers, FFace->BL] = Red
+	get_sticker_color[stickers, FFace->BM] = Red
+	get_sticker_color[stickers, FFace->BR] = Yellow
+	get_sticker_color[stickers, RFace->TL] = Red
+	get_sticker_color[stickers, RFace->TM] = Red
+	get_sticker_color[stickers, RFace->TR] = White
+	get_sticker_color[stickers, RFace->ML] = Red
+	get_sticker_color[stickers, RFace->MR] = Blue
+	get_sticker_color[stickers, RFace->BL] = Blue
+	get_sticker_color[stickers, RFace->BM] = Blue
+	get_sticker_color[stickers, RFace->BR] = Yellow
+	get_sticker_color[stickers, BFace->TL] = Green
+	get_sticker_color[stickers, BFace->TM] = Orange
+	get_sticker_color[stickers, BFace->TR] = Orange
+	get_sticker_color[stickers, BFace->ML] = White
+	get_sticker_color[stickers, BFace->MR] = Yellow
+	get_sticker_color[stickers, BFace->BL] = Orange
+	get_sticker_color[stickers, BFace->BM] = Orange
+	get_sticker_color[stickers, BFace->BR] = Orange
+	get_sticker_color[stickers, DFace->TL] = White
+	get_sticker_color[stickers, DFace->TM] = White
+	get_sticker_color[stickers, DFace->TR] = Orange
+	get_sticker_color[stickers, DFace->ML] = Yellow
+	get_sticker_color[stickers, DFace->MR] = Yellow
+	get_sticker_color[stickers, DFace->BL] = Green
+	get_sticker_color[stickers, DFace->BM] = Green
+	get_sticker_color[stickers, DFace->BR] = Green
+}
+
+-- Scramble used: U' L2 R B2 L2 U R2 D2 R2 F2 R F2 U' B2 F L D'
+pred sticker_based_many_step_scramble {
+	get_sticker_color[stickers, UFace->TL] = Green
+	get_sticker_color[stickers, UFace->TM] = Yellow
+	get_sticker_color[stickers, UFace->TR] = White
+	get_sticker_color[stickers, UFace->ML] = Yellow
+	get_sticker_color[stickers, UFace->MR] = Green
+	get_sticker_color[stickers, UFace->BL] = Yellow
+	get_sticker_color[stickers, UFace->BM] = Red
+	get_sticker_color[stickers, UFace->BR] = Green
+	get_sticker_color[stickers, LFace->TL] = White
+	get_sticker_color[stickers, LFace->TM] = Orange
+	get_sticker_color[stickers, LFace->TR] = Orange
+	get_sticker_color[stickers, LFace->ML] = Blue
+	get_sticker_color[stickers, LFace->MR] = Blue
+	get_sticker_color[stickers, LFace->BL] = Yellow
+	get_sticker_color[stickers, LFace->BM] = Yellow
+	get_sticker_color[stickers, LFace->BR] = Orange
+	get_sticker_color[stickers, FFace->TL] = Blue
+	get_sticker_color[stickers, FFace->TM] = Blue
+	get_sticker_color[stickers, FFace->TR] = White
+	get_sticker_color[stickers, FFace->ML] = White
+	get_sticker_color[stickers, FFace->MR] = Orange
+	get_sticker_color[stickers, FFace->BL] = Green
+	get_sticker_color[stickers, FFace->BM] = Orange
+	get_sticker_color[stickers, FFace->BR] = White
+	get_sticker_color[stickers, RFace->TL] = Orange
+	get_sticker_color[stickers, RFace->TM] = Red
+	get_sticker_color[stickers, RFace->TR] = Red
+	get_sticker_color[stickers, RFace->ML] = White
+	get_sticker_color[stickers, RFace->MR] = Orange
+	get_sticker_color[stickers, RFace->BL] = Orange
+	get_sticker_color[stickers, RFace->BM] = Green
+	get_sticker_color[stickers, RFace->BR] = Red
+	get_sticker_color[stickers, BFace->TL] = Blue
+	get_sticker_color[stickers, BFace->TM] = Green
+	get_sticker_color[stickers, BFace->TR] = Red
+	get_sticker_color[stickers, BFace->ML] = Blue
+	get_sticker_color[stickers, BFace->MR] = Yellow
+	get_sticker_color[stickers, BFace->BL] = Blue
+	get_sticker_color[stickers, BFace->BM] = White
+	get_sticker_color[stickers, BFace->BR] = Red
+	get_sticker_color[stickers, DFace->TL] = Yellow
+	get_sticker_color[stickers, DFace->TM] = Green
+	get_sticker_color[stickers, DFace->TR] = Blue
+	get_sticker_color[stickers, DFace->ML] = Red
+	get_sticker_color[stickers, DFace->MR] = White
+	get_sticker_color[stickers, DFace->BL] = Green
+	get_sticker_color[stickers, DFace->BM] = Red
+	get_sticker_color[stickers, DFace->BR] = Yellow
+}
+
+run { traces sticker_based_5_step_scramble }
