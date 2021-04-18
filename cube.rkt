@@ -11,7 +11,7 @@ one sig TL, TM, TR, ML, MR, BL, BM, BR extends Position {}
 
 abstract sig Face {
 	center: one Color,
-	opposite: one Face,
+	--opposite: one Face,
 	var stickers: set Position->Color,
 	rot: set Face->Position->Face->Position
 }
@@ -384,12 +384,14 @@ pred basics {
 	DFace.center = Yellow
 
 	-- defining opposite faces
+	/*
 	UFace.opposite = DFace
 	LFace.opposite = RFace
 	FFace.opposite = BFace
 	RFace.opposite = LFace
 	BFace.opposite = FFace
 	DFace.opposite = UFace
+	*/
 
 	-- enforces that each sticker is set to exactly one color
 	all face: Face | {
@@ -460,7 +462,7 @@ pred less_dumb_solver {
 
 pred traces {
 	basics
-	less_dumb_solver
+	--less_dumb_solver
 	not solved
 	always(not solved iff {some f: Face | rotate[f] or counter_rotate[f]})
 	always(not solved implies eventually always solved)
@@ -695,4 +697,4 @@ test expect {
 }
 */
 
-run { traces sticker_based_5_step_scramble }
+run { basics sticker_based_2_step_scramble }
