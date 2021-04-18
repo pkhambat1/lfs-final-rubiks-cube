@@ -432,13 +432,41 @@ pred basics {
 			one face.stickers[pos]
 		}
 	}
+
+    all c : Color | {
+        all p : Position | {
+            -- Each color should have one and only one sticker in each position
+            one (stickers.c).p
+        }
+    }
 }
 
-/*
-test expect {
-	eightStickersPerFace : {basics implies (all f : Face | #(f.stickers) = 8)} is theorem
+-- Tests for stickers
+pred faceEightStickers {
+    all f : Face | {
+        #(f.stickers) = 8
+    }
 }
-*/
+
+pred colorEightStickers {
+    all c : Color | {
+        #(stickers.c) = 8
+    }
+}
+
+pred colorStickersRightPosition {
+    all c : Color | {
+        all p : Position | {
+            -- Each color should have one and only one sticker in each position
+            one (stickers.c).p
+        }
+    }
+}
+
+test expect {
+	eightStickersPerFace : {basics implies faceEightStickers} is theorem
+    eightStickersPerColor : {basics implies faceEightStickers} is theorem
+}
 
 pred solved {
 	all face: Face | {
@@ -463,9 +491,16 @@ pred traces {
 	not solved
 	always(not solved iff {some f: Face | rotate[f] or counter_rotate[f]})
 	always(not solved implies eventually always solved)
+    always(solved iff solved_stutter)
 }
-
-pred scramble{
+/*
+test expect {
+	tracesEightStickersPerFace : {traces implies always faceEightStickers} is theorem
+    tracesEightStickersPerColor : {traces implies always faceEightStickers} is theorem
+    tracesEightStickersRightPosition : {traces implies always colorStickersRightPosition} is theorem
+}
+*/
+pred scramble {
 	basics
 	solved
 	eventually(always(not solved))
@@ -639,4 +674,4 @@ pred sticker_based_many_step_scramble {
 	get_sticker_color[stickers, DFace->BR] = Yellow
 }
 
-run { traces sticker_based_5_step_scramble }
+run { traces sticker_based_2_step_scramble }
