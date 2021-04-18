@@ -639,4 +639,4 @@ pred sticker_based_many_step_scramble {
 	get_sticker_color[stickers, DFace->BR] = Yellow
 }
 
-run { traces sticker_based_5_step_scramble }
+run { traces sticker_based_2_step_scramble }
