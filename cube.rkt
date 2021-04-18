@@ -430,6 +430,7 @@ pred basics {
 			one face.stickers[pos]
 		}
 	}
+<<<<<<< HEAD
     -- question: why is specifying 8 stickers per color not a part of basics?
     /*
     all color : Color | {
@@ -441,6 +442,42 @@ pred correctNumStickers {
     all color : Color | {
         #(stickers.color) = 8
     }
+=======
+
+    all c : Color | {
+        all p : Position | {
+            -- Each color should have one and only one sticker in each position
+            one (stickers.c).p
+        }
+    }
+}
+
+-- Tests for stickers
+pred faceEightStickers {
+    all f : Face | {
+        #(f.stickers) = 8
+    }
+}
+
+pred colorEightStickers {
+    all c : Color | {
+        #(stickers.c) = 8
+    }
+}
+
+pred colorStickersRightPosition {
+    all c : Color | {
+        all p : Position | {
+            -- Each color should have one and only one sticker in each position
+            one (stickers.c).p
+        }
+    }
+}
+
+test expect {
+	eightStickersPerFace : {basics implies faceEightStickers} is theorem
+    eightStickersPerColor : {basics implies faceEightStickers} is theorem
+>>>>>>> ea787e82cc6497f77fbb5849d6cd1bbeedfddd9d
 }
 
 pred solved {
@@ -467,9 +504,17 @@ pred traces {
 	not solved
 	always(not solved iff {some f: Face | rotate[f] or counter_rotate[f]})
 	always(not solved implies eventually always solved)
+    always(solved iff solved_stutter)
 }
-
-pred scramble{
+/*
+-- This does not terminate!!
+test expect {
+	tracesEightStickersPerFace : {traces implies always faceEightStickers} is theorem
+    tracesEightStickersPerColor : {traces implies always faceEightStickers} is theorem
+    tracesEightStickersRightPosition : {traces implies always colorStickersRightPosition} is theorem
+}
+*/
+pred scramble {
 	basics
 	solved
 	eventually(always(not solved))
