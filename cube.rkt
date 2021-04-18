@@ -11,7 +11,7 @@ one sig TL, TM, TR, ML, MR, BL, BM, BR extends Position {}
 
 abstract sig Face {
 	center: one Color,
-	--opposite: one Face,
+	opposite: one Face,
 	var stickers: set Position->Color,
 	rot: set Face->Position->Face->Position
 }
@@ -384,14 +384,12 @@ pred basics {
 	DFace.center = Yellow
 
 	-- defining opposite faces
-	/*
 	UFace.opposite = DFace
 	LFace.opposite = RFace
 	FFace.opposite = BFace
 	RFace.opposite = LFace
 	BFace.opposite = FFace
 	DFace.opposite = UFace
-	*/
 
 	-- enforces that each sticker is set to exactly one color
 	all face: Face | {
@@ -399,13 +397,14 @@ pred basics {
 			one face.stickers[pos]
 		}
 	}
-
+	/*
     all c : Color | {
         all p : Position | {
             -- Each color should have one and only one sticker in each position
             one (stickers.c).p
         }
     }
+    */
 }
 
 -- Tests for stickers
@@ -444,20 +443,20 @@ pred solved_stutter {
 -- converting these into tests for regular solver
 pred less_dumb_solver {
 	-- don't undo your most recent move
-	always(all f: Face | rotate[f] implies not after counter_rotate[f])
-	always(all f: Face | counter_rotate[f] implies not after rotate[f])
+	--always(all f: Face | rotate[f] implies not after counter_rotate[f])
+	--always(all f: Face | counter_rotate[f] implies not after rotate[f])
 	-- don't repeat a state using multiple moves and their counter rotations
 	always(not solved implies stickers != stickers'''')
 	-- never rotate the same face more than two times in a row (three times is the same as one in the other direction)
-	--always(all f: Face | rotate[f] and after rotate[f] implies not after after rotate[f])
-	--always(all f: Face | counter_rotate[f] and after counter_rotate[f] implies not after after counter_rotate[f])
+	always(all f: Face | rotate[f] and after rotate[f] implies not after after rotate[f])
+	always(all f: Face | counter_rotate[f] and after counter_rotate[f] implies not after after counter_rotate[f])
 	-- don't undo a move until a face that intersects with the face is rotated
-	/*
+	--/*
 	always(all f: Face | rotate[f] implies not counter_rotate[f] until 
 		{solved or {some af: Face | {af != f.opposite and {rotate[af] or counter_rotate[af]}}}})
 	always(all f: Face | counter_rotate[f] implies not rotate[f] until 
 		{solved or {some af: Face | {af != f.opposite and {counter_rotate[af] or rotate[af]}}}})
-	*/
+	--*/
 }
 
 pred traces {
@@ -697,4 +696,4 @@ test expect {
 }
 */
 
-run { basics sticker_based_2_step_scramble }
+run { traces sticker_based_5_step_scramble }
