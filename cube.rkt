@@ -430,19 +430,6 @@ pred basics {
 			one face.stickers[pos]
 		}
 	}
-<<<<<<< HEAD
-    -- question: why is specifying 8 stickers per color not a part of basics?
-    /*
-    all color : Color | {
-        #(Face.stickers.color) = 8
-    }*/
-}
-
-pred correctNumStickers {
-    all color : Color | {
-        #(stickers.color) = 8
-    }
-=======
 
     all c : Color | {
         all p : Position | {
@@ -477,7 +464,6 @@ pred colorStickersRightPosition {
 test expect {
 	eightStickersPerFace : {basics implies faceEightStickers} is theorem
     eightStickersPerColor : {basics implies faceEightStickers} is theorem
->>>>>>> ea787e82cc6497f77fbb5849d6cd1bbeedfddd9d
 }
 
 pred solved {
