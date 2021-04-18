@@ -47,7 +47,6 @@ pred counter_rotate[rf: Face] {
     }
 }
 
-/*
 -- helper transition preds
 -- use for rotating face
 pred rotateFacePlane[f: Face] {
@@ -70,7 +69,6 @@ pred dontChangeFacePlane[f: Face] {
     -- f.stickers is Position->Color
     f.stickers' = f.stickers
 }
-*/
 
 pred rotations {
     --- UFace Rotations
@@ -432,13 +430,18 @@ pred basics {
 			one face.stickers[pos]
 		}
 	}
+    -- question: why is specifying 8 stickers per color not a part of basics?
+    /*
+    all color : Color | {
+        #(Face.stickers.color) = 8
+    }*/
 }
 
-/*
-test expect {
-	eightStickersPerFace : {basics implies (all f : Face | #(f.stickers) = 8)} is theorem
+pred correctNumStickers {
+    all color : Color | {
+        #(stickers.color) = 8
+    }
 }
-*/
 
 pred solved {
 	all face: Face | {
@@ -451,6 +454,7 @@ pred solved_stutter {
 	stickers' = stickers
 }
 
+-- converting these into tests for regular solver
 pred less_dumb_solver {
 	always(all f: Face | rotate[f] implies not after counter_rotate[f])
 	always(all f: Face | counter_rotate[f] implies not after rotate[f])
@@ -639,4 +643,45 @@ pred sticker_based_many_step_scramble {
 	get_sticker_color[stickers, DFace->BR] = Yellow
 }
 
-run { traces sticker_based_5_step_scramble }
+/** PROPERTY VERIFICATION TESTS **/
+
+test expect {
+	eightStickersPerFace : { basics implies (all f : Face | #(f.stickers) = 8) } is theorem
+
+    -- this involves higher-order quantification? (not sure but Pardinus CLI obtained)
+    -- eightStickersForEachColor : {scramble implies (all c : Color | #(Face.stickers.c) = 8)} is theorem
+
+    anyMoveDoneFourTimesGivesSameCube : { always basics implies { {
+        rotate[RFace]
+        after rotate[RFace]
+        after after rotate[RFace]
+        after after after rotate[RFace]
+    } =>  stickers'''' = stickers } } is theorem
+
+    doAndUndoRotationGivesSameCube : {  { 
+        always basics
+        rotate[UFace]
+        after counter_rotate[UFace]
+    } => stickers'' = stickers } is theorem
+    
+    oppositeFaceDoesntChangeWithOverallRotation : {
+        {
+            basics
+            rotate[LFace]
+        } => dontChangeFacePlane[RFace]
+    } is theorem
+
+    sameFacePositionChangesWithOverallRotation : {
+        {
+            basics
+            rotate[RFace]
+        } => rotateFacePlane[RFace]
+    } is theorem
+
+    // properties to preserve across moves -- 
+
+    --alwaysEightStickersForEachColor : {scramble implies always correctNumStickers} is theorem
+
+}
+
+--run { traces sticker_based_5_step_scramble }
