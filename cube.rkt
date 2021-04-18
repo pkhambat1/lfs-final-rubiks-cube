@@ -1,7 +1,6 @@
 #lang forge
 
 option problem_type temporal
--- option min_tracelength 4
 option max_tracelength 27
 
 abstract sig Color {}
@@ -12,13 +11,8 @@ one sig TL, TM, TR, ML, MR, BL, BM, BR extends Position {}
 
 abstract sig Face {
 	center: one Color,
+	opposite: one Face,
 	var stickers: set Position->Color,
-	/*
-	toup: one Face,
-	todown: one Face,
-	toleft: one Face,
-	toright: one Face,
-	*/
 	rot: set Face->Position->Face->Position
 }
 
@@ -378,51 +372,24 @@ pred rotations {
     (DFace->BR)->(DFace->BL)   -- Current Face
 }
 
-/*
-pred orientations {
-	-- Toup, todown, etc	
-	UFace.toup = BFace
-	UFace.toright = RFace
-	UFace.toleft = LFace
-	UFace.todown = FFace
-
-	FFace.toup = UFace
-	FFace.toright = RFace
-	FFace.toleft = LFace
-	FFace.todown = DFace
-
-	LFace.toup = UFace
-	LFace.toright = FFace
-	LFace.toleft = BFace
-	LFace.todown = DFace
-
-	RFace.toup = UFace
-	RFace.toright = BFace
-	RFace.toleft = FFace
-	RFace.todown = DFace
-
-	BFace.toup = UFace
-	BFace.toright = LFace
-	BFace.toleft = RFace
-	BFace.todown = DFace
-
-	DFace.toup = FFace
-	DFace.toright = RFace
-	DFace.toleft = LFace
-	DFace.todown = BFace
-}
-*/
-
 pred basics {
-	--orientations
 	rotations
 
+	-- defining central colors
 	UFace.center = White
-	FFace.center = Green
 	LFace.center = Orange
+	FFace.center = Green
 	RFace.center = Red
 	BFace.center = Blue
 	DFace.center = Yellow
+
+	-- defining opposite faces
+	UFace.opposite = DFace
+	LFace.opposite = RFace
+	FFace.opposite = BFace
+	RFace.opposite = LFace
+	BFace.opposite = FFace
+	DFace.opposite = UFace
 
 	-- enforces that each sticker is set to exactly one color
 	all face: Face | {
@@ -461,11 +428,6 @@ pred colorStickersRightPosition {
     }
 }
 
-test expect {
-	eightStickersPerFace : {basics implies faceEightStickers} is theorem
-    eightStickersPerColor : {basics implies faceEightStickers} is theorem
-}
-
 pred solved {
 	all face: Face | {
 		face.stickers[Position] = face.center
@@ -479,9 +441,21 @@ pred solved_stutter {
 
 -- converting these into tests for regular solver
 pred less_dumb_solver {
+	-- don't undo your most recent move
 	always(all f: Face | rotate[f] implies not after counter_rotate[f])
 	always(all f: Face | counter_rotate[f] implies not after rotate[f])
+	-- don't repeat a state using multiple moves and their counter rotations
 	always(not solved implies stickers != stickers'''')
+	-- never rotate the same face more than two times in a row (three times is the same as one in the other direction)
+	--always(all f: Face | rotate[f] and after rotate[f] implies not after after rotate[f])
+	--always(all f: Face | counter_rotate[f] and after counter_rotate[f] implies not after after counter_rotate[f])
+	-- don't undo a move until a face that intersects with the face is rotated
+	/*
+	always(all f: Face | rotate[f] implies not counter_rotate[f] until 
+		{solved or {some af: Face | {af != f.opposite and {rotate[af] or counter_rotate[af]}}}})
+	always(all f: Face | counter_rotate[f] implies not rotate[f] until 
+		{solved or {some af: Face | {af != f.opposite and {counter_rotate[af] or rotate[af]}}}})
+	*/
 }
 
 pred traces {
@@ -492,14 +466,7 @@ pred traces {
 	always(not solved implies eventually always solved)
     always(solved iff solved_stutter)
 }
-/*
--- This does not terminate!!
-test expect {
-	tracesEightStickersPerFace : {traces implies always faceEightStickers} is theorem
-    tracesEightStickersPerColor : {traces implies always faceEightStickers} is theorem
-    tracesEightStickersRightPosition : {traces implies always colorStickersRightPosition} is theorem
-}
-*/
+
 pred scramble {
 	basics
 	solved
@@ -675,7 +642,7 @@ pred sticker_based_many_step_scramble {
 }
 
 /** PROPERTY VERIFICATION TESTS **/
-
+/*
 test expect {
 	eightStickersPerFace : { basics implies (all f : Face | #(f.stickers) = 8) } is theorem
 
@@ -712,7 +679,20 @@ test expect {
     // properties to preserve across moves -- 
 
     --alwaysEightStickersForEachColor : {scramble implies always correctNumStickers} is theorem
-
+    
+	-- This does not terminate!!
+	--test expect {
+	--	tracesEightStickersPerFace : {traces implies always faceEightStickers} is theorem
+	--    tracesEightStickersPerColor : {traces implies always faceEightStickers} is theorem
+	--    tracesEightStickersRightPosition : {traces implies always colorStickersRightPosition} is theorem
+	--}
+	
+	--test expect {
+	--	eightStickersPerFace : {basics implies faceEightStickers} is theorem
+	--    eightStickersPerColor : {basics implies faceEightStickers} is theorem
+	--}
+	
 }
+*/
 
---run { traces sticker_based_5_step_scramble }
+run { traces sticker_based_5_step_scramble }
