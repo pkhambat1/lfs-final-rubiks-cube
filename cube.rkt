@@ -494,6 +494,7 @@ pred traces {
     always(solved iff solved_stutter)
 }
 /*
+-- This does not terminate!!
 test expect {
 	tracesEightStickersPerFace : {traces implies always faceEightStickers} is theorem
     tracesEightStickersPerColor : {traces implies always faceEightStickers} is theorem
