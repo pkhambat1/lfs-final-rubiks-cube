@@ -1,5 +1,6 @@
 #lang forge
 
+--option solver MiniSat
 option problem_type temporal
 option max_tracelength 27
 
@@ -477,6 +478,58 @@ pred scramble {
 	--always(all f: Face | counter_rotate[f] implies not after rotate[f])
 }
 
+-- Scramble used: U
+pred sticker_based_1_step_scramble {
+	get_sticker_color[stickers, UFace->TL] = White
+	get_sticker_color[stickers, UFace->TM] = White
+	get_sticker_color[stickers, UFace->TR] = White
+	get_sticker_color[stickers, UFace->ML] = White
+	get_sticker_color[stickers, UFace->MR] = White
+	get_sticker_color[stickers, UFace->BL] = White
+	get_sticker_color[stickers, UFace->BM] = White
+	get_sticker_color[stickers, UFace->BR] = White
+	get_sticker_color[stickers, LFace->TL] = Green
+	get_sticker_color[stickers, LFace->TM] = Green
+	get_sticker_color[stickers, LFace->TR] = Green
+	get_sticker_color[stickers, LFace->ML] = Orange
+	get_sticker_color[stickers, LFace->MR] = Orange
+	get_sticker_color[stickers, LFace->BL] = Orange
+	get_sticker_color[stickers, LFace->BM] = Orange
+	get_sticker_color[stickers, LFace->BR] = Orange
+	get_sticker_color[stickers, FFace->TL] = Red
+	get_sticker_color[stickers, FFace->TM] = Red
+	get_sticker_color[stickers, FFace->TR] = Red
+	get_sticker_color[stickers, FFace->ML] = Green
+	get_sticker_color[stickers, FFace->MR] = Green
+	get_sticker_color[stickers, FFace->BL] = Green
+	get_sticker_color[stickers, FFace->BM] = Green
+	get_sticker_color[stickers, FFace->BR] = Green
+	get_sticker_color[stickers, RFace->TL] = Blue
+	get_sticker_color[stickers, RFace->TM] = Blue
+	get_sticker_color[stickers, RFace->TR] = Blue
+	get_sticker_color[stickers, RFace->ML] = Red
+	get_sticker_color[stickers, RFace->MR] = Red
+	get_sticker_color[stickers, RFace->BL] = Red
+	get_sticker_color[stickers, RFace->BM] = Red
+	get_sticker_color[stickers, RFace->BR] = Red
+	get_sticker_color[stickers, BFace->TL] = Orange
+	get_sticker_color[stickers, BFace->TM] = Orange
+	get_sticker_color[stickers, BFace->TR] = Orange
+	get_sticker_color[stickers, BFace->ML] = Blue
+	get_sticker_color[stickers, BFace->MR] = Blue
+	get_sticker_color[stickers, BFace->BL] = Blue
+	get_sticker_color[stickers, BFace->BM] = Blue
+	get_sticker_color[stickers, BFace->BR] = Blue
+	get_sticker_color[stickers, DFace->TL] = Yellow
+	get_sticker_color[stickers, DFace->TM] = Yellow
+	get_sticker_color[stickers, DFace->TR] = Yellow
+	get_sticker_color[stickers, DFace->ML] = Yellow
+	get_sticker_color[stickers, DFace->MR] = Yellow
+	get_sticker_color[stickers, DFace->BL] = Yellow
+	get_sticker_color[stickers, DFace->BM] = Yellow
+	get_sticker_color[stickers, DFace->BR] = Yellow
+}
+
 -- Scramble used: R U
 pred sticker_based_2_step_scramble {
 	get_sticker_color[stickers, UFace->TL] = White
@@ -536,6 +589,58 @@ pred move_based_2_step_scramble {
 	solved
 	rotate[RFace]
 	after rotate[UFace]
+}
+
+-- Scramble used: R U R' U'
+pred sticker_based_4_step_scramble {
+	get_sticker_color[stickers, UFace->TL] = White
+	get_sticker_color[stickers, UFace->TM] = White
+	get_sticker_color[stickers, UFace->TR] = Orange
+	get_sticker_color[stickers, UFace->ML] = White
+	get_sticker_color[stickers, UFace->MR] = Green
+	get_sticker_color[stickers, UFace->BL] = White
+	get_sticker_color[stickers, UFace->BM] = White
+	get_sticker_color[stickers, UFace->BR] = Green
+	get_sticker_color[stickers, LFace->TL] = Blue
+	get_sticker_color[stickers, LFace->TM] = Orange
+	get_sticker_color[stickers, LFace->TR] = Orange
+	get_sticker_color[stickers, LFace->ML] = Orange
+	get_sticker_color[stickers, LFace->MR] = Orange
+	get_sticker_color[stickers, LFace->BL] = Orange
+	get_sticker_color[stickers, LFace->BM] = Orange
+	get_sticker_color[stickers, LFace->BR] = Orange
+	get_sticker_color[stickers, FFace->TL] = Green
+	get_sticker_color[stickers, FFace->TM] = Green
+	get_sticker_color[stickers, FFace->TR] = Yellow
+	get_sticker_color[stickers, FFace->ML] = Green
+	get_sticker_color[stickers, FFace->MR] = White
+	get_sticker_color[stickers, FFace->BL] = Green
+	get_sticker_color[stickers, FFace->BM] = Green
+	get_sticker_color[stickers, FFace->BR] = Green
+	get_sticker_color[stickers, RFace->TL] = Red
+	get_sticker_color[stickers, RFace->TM] = Red
+	get_sticker_color[stickers, RFace->TR] = White
+	get_sticker_color[stickers, RFace->ML] = Blue
+	get_sticker_color[stickers, RFace->MR] = Red
+	get_sticker_color[stickers, RFace->BL] = White
+	get_sticker_color[stickers, RFace->BM] = Red
+	get_sticker_color[stickers, RFace->BR] = Red
+	get_sticker_color[stickers, BFace->TL] = Blue
+	get_sticker_color[stickers, BFace->TM] = Red
+	get_sticker_color[stickers, BFace->TR] = Red
+	get_sticker_color[stickers, BFace->ML] = Blue
+	get_sticker_color[stickers, BFace->MR] = Blue
+	get_sticker_color[stickers, BFace->BL] = Blue
+	get_sticker_color[stickers, BFace->BM] = Blue
+	get_sticker_color[stickers, BFace->BR] = Blue
+	get_sticker_color[stickers, DFace->TL] = Yellow
+	get_sticker_color[stickers, DFace->TM] = Yellow
+	get_sticker_color[stickers, DFace->TR] = Red
+	get_sticker_color[stickers, DFace->ML] = Yellow
+	get_sticker_color[stickers, DFace->MR] = Yellow
+	get_sticker_color[stickers, DFace->BL] = Yellow
+	get_sticker_color[stickers, DFace->BM] = Yellow
+	get_sticker_color[stickers, DFace->BR] = Yellow
 }
 
 -- Scramble used: R L U R D'
