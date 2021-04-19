@@ -1,17 +1,14 @@
 #lang forge
-open "foundations.rkt"
+open "foundations-and-presets.rkt"
+-- foundations.rkt contains all the sigs needed for modelling a Rubik's cube
+-- and hard-coded rotations and scramble predicates.
 
 --option solver MiniSat
 option problem_type temporal
-option max_tracelength 27
+option max_tracelength 5
 
--- stickers: Face->Position->Color
--- stickers[Face->Position] --> gives us the color
-
-fun get_sticker_color[sticks: Face->Position->Color, fp: Face->Position]: Color {
-	{ (fp.Position).sticks[Face.fp] }
-}
-
+-- Models the clockwise rotation of a face and updates the stickers relation in 
+-- the next state accordingly on all faces.
 pred rotate[rf: Face] {
     all f: Face | {
         all p: Position | {
@@ -20,6 +17,8 @@ pred rotate[rf: Face] {
     }
 }
 
+-- Models the counter-clockwise rotation of a face and updates the stickers 
+-- relation in the next state accordingly on all faces.
 pred counter_rotate[rf: Face] {
     all f: Face | {
         all p: Position | {
@@ -28,8 +27,8 @@ pred counter_rotate[rf: Face] {
     }
 }
 
--- helper transition preds
--- use for rotating face
+-- A transition predicate that maps positions within a face to their
+-- subsequent positions after rotating the face clockwise.
 pred rotateFacePlane[f: Face] {
     -- positions are TL, TM, TR, ML, MR, BL, BM, BR
     -- f.stickers is Position->Color
@@ -45,12 +44,17 @@ pred rotateFacePlane[f: Face] {
     f.stickers[ML] = f.(stickers')[TM]
 }
 
--- use for opposite of rotating face
+-- A transition predicate that specifies that a particular face's sticker configuration
+-- does not change over the transition.
 pred dontChangeFacePlane[f: Face] {
     -- f.stickers is Position->Color
     f.stickers' = f.stickers
 }
 
+-- A predicate that sets up all basic properties of a Rubik's cube, which
+-- include transition predicates for rotations, central colors for faces,
+-- and opposite faces for each face. This also ensures that each sticker is
+-- mapped to exactly one color.
 pred basics {
 	rotations
 
@@ -99,21 +103,24 @@ pred colorEightStickers {
     }
 }
 
+-- Each color should have one and only one sticker in each position.
 pred colorStickersRightPosition {
     all c : Color | {
         all p : Position | {
-            -- Each color should have one and only one sticker in each position
             one (stickers.c).p
         }
     }
 }
 
+-- A solved state is one where all stickers on the face share the same
+-- color as the central sticker on the face.
 pred solved {
 	all face: Face | {
 		face.stickers[Position] = face.center
 	}
 }
 
+-- A stutter transition predicate to allow Electrum to lasso on the last solved state.
 pred solved_stutter {
 	solved
 	stickers' = stickers
@@ -143,121 +150,20 @@ pred traces {
 	--less_naive_solver
 	not solved
 	always(not solved iff {some f: Face | rotate[f] or counter_rotate[f]})
-	always(not solved implies eventually always solved)
+	eventually solved
     always(solved iff solved_stutter)
 }
 
+-- A predicate describing a trace that begins from a solved state and ends up in an
+-- unsolved state reached through a sequence of valid rotations and counter-rotations.
 pred scramble {
 	basics
 	solved
 	eventually(always(not solved))
 	always(some f: Face | rotate[f] or counter_rotate[f])
-	--always(all f: Face | rotate[f] implies not after counter_rotate[f])
-	--always(all f: Face | counter_rotate[f] implies not after rotate[f])
-}
-
--- Scramble used: U
-pred sticker_based_1_step_scramble {
-	get_sticker_color[stickers, UFace->TL] = White
-	get_sticker_color[stickers, UFace->TM] = White
-	get_sticker_color[stickers, UFace->TR] = White
-	get_sticker_color[stickers, UFace->ML] = White
-	get_sticker_color[stickers, UFace->MR] = White
-	get_sticker_color[stickers, UFace->BL] = White
-	get_sticker_color[stickers, UFace->BM] = White
-	get_sticker_color[stickers, UFace->BR] = White
-	get_sticker_color[stickers, LFace->TL] = Green
-	get_sticker_color[stickers, LFace->TM] = Green
-	get_sticker_color[stickers, LFace->TR] = Green
-	get_sticker_color[stickers, LFace->ML] = Orange
-	get_sticker_color[stickers, LFace->MR] = Orange
-	get_sticker_color[stickers, LFace->BL] = Orange
-	get_sticker_color[stickers, LFace->BM] = Orange
-	get_sticker_color[stickers, LFace->BR] = Orange
-	get_sticker_color[stickers, FFace->TL] = Red
-	get_sticker_color[stickers, FFace->TM] = Red
-	get_sticker_color[stickers, FFace->TR] = Red
-	get_sticker_color[stickers, FFace->ML] = Green
-	get_sticker_color[stickers, FFace->MR] = Green
-	get_sticker_color[stickers, FFace->BL] = Green
-	get_sticker_color[stickers, FFace->BM] = Green
-	get_sticker_color[stickers, FFace->BR] = Green
-	get_sticker_color[stickers, RFace->TL] = Blue
-	get_sticker_color[stickers, RFace->TM] = Blue
-	get_sticker_color[stickers, RFace->TR] = Blue
-	get_sticker_color[stickers, RFace->ML] = Red
-	get_sticker_color[stickers, RFace->MR] = Red
-	get_sticker_color[stickers, RFace->BL] = Red
-	get_sticker_color[stickers, RFace->BM] = Red
-	get_sticker_color[stickers, RFace->BR] = Red
-	get_sticker_color[stickers, BFace->TL] = Orange
-	get_sticker_color[stickers, BFace->TM] = Orange
-	get_sticker_color[stickers, BFace->TR] = Orange
-	get_sticker_color[stickers, BFace->ML] = Blue
-	get_sticker_color[stickers, BFace->MR] = Blue
-	get_sticker_color[stickers, BFace->BL] = Blue
-	get_sticker_color[stickers, BFace->BM] = Blue
-	get_sticker_color[stickers, BFace->BR] = Blue
-	get_sticker_color[stickers, DFace->TL] = Yellow
-	get_sticker_color[stickers, DFace->TM] = Yellow
-	get_sticker_color[stickers, DFace->TR] = Yellow
-	get_sticker_color[stickers, DFace->ML] = Yellow
-	get_sticker_color[stickers, DFace->MR] = Yellow
-	get_sticker_color[stickers, DFace->BL] = Yellow
-	get_sticker_color[stickers, DFace->BM] = Yellow
-	get_sticker_color[stickers, DFace->BR] = Yellow
-}
-
--- Scramble used: R U
-pred sticker_based_2_step_scramble {
-	get_sticker_color[stickers, UFace->TL] = White
-	get_sticker_color[stickers, UFace->TM] = White
-	get_sticker_color[stickers, UFace->TR] = White
-	get_sticker_color[stickers, UFace->ML] = White
-	get_sticker_color[stickers, UFace->MR] = White
-	get_sticker_color[stickers, UFace->BL] = Green
-	get_sticker_color[stickers, UFace->BM] = Green
-	get_sticker_color[stickers, UFace->BR] = Green
-	get_sticker_color[stickers, LFace->TL] = Green
-	get_sticker_color[stickers, LFace->TM] = Green
-	get_sticker_color[stickers, LFace->TR] = Yellow
-	get_sticker_color[stickers, LFace->ML] = Orange
-	get_sticker_color[stickers, LFace->MR] = Orange
-	get_sticker_color[stickers, LFace->BL] = Orange
-	get_sticker_color[stickers, LFace->BM] = Orange
-	get_sticker_color[stickers, LFace->BR] = Orange
-	get_sticker_color[stickers, FFace->TL] = Red
-	get_sticker_color[stickers, FFace->TM] = Red
-	get_sticker_color[stickers, FFace->TR] = Red
-	get_sticker_color[stickers, FFace->ML] = Green
-	get_sticker_color[stickers, FFace->MR] = Yellow
-	get_sticker_color[stickers, FFace->BL] = Green
-	get_sticker_color[stickers, FFace->BM] = Green
-	get_sticker_color[stickers, FFace->BR] = Yellow
-	get_sticker_color[stickers, RFace->TL] = White
-	get_sticker_color[stickers, RFace->TM] = Blue
-	get_sticker_color[stickers, RFace->TR] = Blue
-	get_sticker_color[stickers, RFace->ML] = Red
-	get_sticker_color[stickers, RFace->MR] = Red
-	get_sticker_color[stickers, RFace->BL] = Red
-	get_sticker_color[stickers, RFace->BM] = Red
-	get_sticker_color[stickers, RFace->BR] = Red
-	get_sticker_color[stickers, BFace->TL] = Orange
-	get_sticker_color[stickers, BFace->TM] = Orange
-	get_sticker_color[stickers, BFace->TR] = Orange
-	get_sticker_color[stickers, BFace->ML] = White
-	get_sticker_color[stickers, BFace->MR] = Blue
-	get_sticker_color[stickers, BFace->BL] = White
-	get_sticker_color[stickers, BFace->BM] = Blue
-	get_sticker_color[stickers, BFace->BR] = Blue
-	get_sticker_color[stickers, DFace->TL] = Yellow
-	get_sticker_color[stickers, DFace->TM] = Yellow
-	get_sticker_color[stickers, DFace->TR] = Blue
-	get_sticker_color[stickers, DFace->ML] = Yellow
-	get_sticker_color[stickers, DFace->MR] = Blue
-	get_sticker_color[stickers, DFace->BL] = Yellow
-	get_sticker_color[stickers, DFace->BM] = Yellow
-	get_sticker_color[stickers, DFace->BR] = Blue
+    -- NOTE: makes the trace less redundant but might take more time
+	--   always(all f: Face | rotate[f] implies not after counter_rotate[f])
+	--   always(all f: Face | counter_rotate[f] implies not after rotate[f])
 }
 
 -- WARNING:
@@ -269,166 +175,10 @@ pred move_based_2_step_scramble {
 	after rotate[UFace]
 }
 
--- Scramble used: R U R' U'
-pred sticker_based_4_step_scramble {
-	get_sticker_color[stickers, UFace->TL] = White
-	get_sticker_color[stickers, UFace->TM] = White
-	get_sticker_color[stickers, UFace->TR] = Orange
-	get_sticker_color[stickers, UFace->ML] = White
-	get_sticker_color[stickers, UFace->MR] = Green
-	get_sticker_color[stickers, UFace->BL] = White
-	get_sticker_color[stickers, UFace->BM] = White
-	get_sticker_color[stickers, UFace->BR] = Green
-	get_sticker_color[stickers, LFace->TL] = Blue
-	get_sticker_color[stickers, LFace->TM] = Orange
-	get_sticker_color[stickers, LFace->TR] = Orange
-	get_sticker_color[stickers, LFace->ML] = Orange
-	get_sticker_color[stickers, LFace->MR] = Orange
-	get_sticker_color[stickers, LFace->BL] = Orange
-	get_sticker_color[stickers, LFace->BM] = Orange
-	get_sticker_color[stickers, LFace->BR] = Orange
-	get_sticker_color[stickers, FFace->TL] = Green
-	get_sticker_color[stickers, FFace->TM] = Green
-	get_sticker_color[stickers, FFace->TR] = Yellow
-	get_sticker_color[stickers, FFace->ML] = Green
-	get_sticker_color[stickers, FFace->MR] = White
-	get_sticker_color[stickers, FFace->BL] = Green
-	get_sticker_color[stickers, FFace->BM] = Green
-	get_sticker_color[stickers, FFace->BR] = Green
-	get_sticker_color[stickers, RFace->TL] = Red
-	get_sticker_color[stickers, RFace->TM] = Red
-	get_sticker_color[stickers, RFace->TR] = White
-	get_sticker_color[stickers, RFace->ML] = Blue
-	get_sticker_color[stickers, RFace->MR] = Red
-	get_sticker_color[stickers, RFace->BL] = White
-	get_sticker_color[stickers, RFace->BM] = Red
-	get_sticker_color[stickers, RFace->BR] = Red
-	get_sticker_color[stickers, BFace->TL] = Blue
-	get_sticker_color[stickers, BFace->TM] = Red
-	get_sticker_color[stickers, BFace->TR] = Red
-	get_sticker_color[stickers, BFace->ML] = Blue
-	get_sticker_color[stickers, BFace->MR] = Blue
-	get_sticker_color[stickers, BFace->BL] = Blue
-	get_sticker_color[stickers, BFace->BM] = Blue
-	get_sticker_color[stickers, BFace->BR] = Blue
-	get_sticker_color[stickers, DFace->TL] = Yellow
-	get_sticker_color[stickers, DFace->TM] = Yellow
-	get_sticker_color[stickers, DFace->TR] = Red
-	get_sticker_color[stickers, DFace->ML] = Yellow
-	get_sticker_color[stickers, DFace->MR] = Yellow
-	get_sticker_color[stickers, DFace->BL] = Yellow
-	get_sticker_color[stickers, DFace->BM] = Yellow
-	get_sticker_color[stickers, DFace->BR] = Yellow
-}
-
--- Scramble used: R L U R D'
-pred sticker_based_5_step_scramble {
-	get_sticker_color[stickers, UFace->TL] = Blue
-	get_sticker_color[stickers, UFace->TM] = Blue
-	get_sticker_color[stickers, UFace->TR] = Red
-	get_sticker_color[stickers, UFace->ML] = White
-	get_sticker_color[stickers, UFace->MR] = Yellow
-	get_sticker_color[stickers, UFace->BL] = Green
-	get_sticker_color[stickers, UFace->BM] = Green
-	get_sticker_color[stickers, UFace->BR] = Yellow
-	get_sticker_color[stickers, LFace->TL] = White
-	get_sticker_color[stickers, LFace->TM] = Green
-	get_sticker_color[stickers, LFace->TR] = Yellow
-	get_sticker_color[stickers, LFace->ML] = Orange
-	get_sticker_color[stickers, LFace->MR] = Orange
-	get_sticker_color[stickers, LFace->BL] = White
-	get_sticker_color[stickers, LFace->BM] = Green
-	get_sticker_color[stickers, LFace->BR] = Blue
-	get_sticker_color[stickers, FFace->TL] = Red
-	get_sticker_color[stickers, FFace->TM] = Red
-	get_sticker_color[stickers, FFace->TR] = Blue
-	get_sticker_color[stickers, FFace->ML] = White
-	get_sticker_color[stickers, FFace->MR] = Blue
-	get_sticker_color[stickers, FFace->BL] = Red
-	get_sticker_color[stickers, FFace->BM] = Red
-	get_sticker_color[stickers, FFace->BR] = Yellow
-	get_sticker_color[stickers, RFace->TL] = Red
-	get_sticker_color[stickers, RFace->TM] = Red
-	get_sticker_color[stickers, RFace->TR] = White
-	get_sticker_color[stickers, RFace->ML] = Red
-	get_sticker_color[stickers, RFace->MR] = Blue
-	get_sticker_color[stickers, RFace->BL] = Blue
-	get_sticker_color[stickers, RFace->BM] = Blue
-	get_sticker_color[stickers, RFace->BR] = Yellow
-	get_sticker_color[stickers, BFace->TL] = Green
-	get_sticker_color[stickers, BFace->TM] = Orange
-	get_sticker_color[stickers, BFace->TR] = Orange
-	get_sticker_color[stickers, BFace->ML] = White
-	get_sticker_color[stickers, BFace->MR] = Yellow
-	get_sticker_color[stickers, BFace->BL] = Orange
-	get_sticker_color[stickers, BFace->BM] = Orange
-	get_sticker_color[stickers, BFace->BR] = Orange
-	get_sticker_color[stickers, DFace->TL] = White
-	get_sticker_color[stickers, DFace->TM] = White
-	get_sticker_color[stickers, DFace->TR] = Orange
-	get_sticker_color[stickers, DFace->ML] = Yellow
-	get_sticker_color[stickers, DFace->MR] = Yellow
-	get_sticker_color[stickers, DFace->BL] = Green
-	get_sticker_color[stickers, DFace->BM] = Green
-	get_sticker_color[stickers, DFace->BR] = Green
-}
-
--- Scramble used: U' L2 R B2 L2 U R2 D2 R2 F2 R F2 U' B2 F L D'
-pred sticker_based_many_step_scramble {
-	get_sticker_color[stickers, UFace->TL] = Green
-	get_sticker_color[stickers, UFace->TM] = Yellow
-	get_sticker_color[stickers, UFace->TR] = White
-	get_sticker_color[stickers, UFace->ML] = Yellow
-	get_sticker_color[stickers, UFace->MR] = Green
-	get_sticker_color[stickers, UFace->BL] = Yellow
-	get_sticker_color[stickers, UFace->BM] = Red
-	get_sticker_color[stickers, UFace->BR] = Green
-	get_sticker_color[stickers, LFace->TL] = White
-	get_sticker_color[stickers, LFace->TM] = Orange
-	get_sticker_color[stickers, LFace->TR] = Orange
-	get_sticker_color[stickers, LFace->ML] = Blue
-	get_sticker_color[stickers, LFace->MR] = Blue
-	get_sticker_color[stickers, LFace->BL] = Yellow
-	get_sticker_color[stickers, LFace->BM] = Yellow
-	get_sticker_color[stickers, LFace->BR] = Orange
-	get_sticker_color[stickers, FFace->TL] = Blue
-	get_sticker_color[stickers, FFace->TM] = Blue
-	get_sticker_color[stickers, FFace->TR] = White
-	get_sticker_color[stickers, FFace->ML] = White
-	get_sticker_color[stickers, FFace->MR] = Orange
-	get_sticker_color[stickers, FFace->BL] = Green
-	get_sticker_color[stickers, FFace->BM] = Orange
-	get_sticker_color[stickers, FFace->BR] = White
-	get_sticker_color[stickers, RFace->TL] = Orange
-	get_sticker_color[stickers, RFace->TM] = Red
-	get_sticker_color[stickers, RFace->TR] = Red
-	get_sticker_color[stickers, RFace->ML] = White
-	get_sticker_color[stickers, RFace->MR] = Orange
-	get_sticker_color[stickers, RFace->BL] = Orange
-	get_sticker_color[stickers, RFace->BM] = Green
-	get_sticker_color[stickers, RFace->BR] = Red
-	get_sticker_color[stickers, BFace->TL] = Blue
-	get_sticker_color[stickers, BFace->TM] = Green
-	get_sticker_color[stickers, BFace->TR] = Red
-	get_sticker_color[stickers, BFace->ML] = Blue
-	get_sticker_color[stickers, BFace->MR] = Yellow
-	get_sticker_color[stickers, BFace->BL] = Blue
-	get_sticker_color[stickers, BFace->BM] = White
-	get_sticker_color[stickers, BFace->BR] = Red
-	get_sticker_color[stickers, DFace->TL] = Yellow
-	get_sticker_color[stickers, DFace->TM] = Green
-	get_sticker_color[stickers, DFace->TR] = Blue
-	get_sticker_color[stickers, DFace->ML] = Red
-	get_sticker_color[stickers, DFace->MR] = White
-	get_sticker_color[stickers, DFace->BL] = Green
-	get_sticker_color[stickers, DFace->BM] = Red
-	get_sticker_color[stickers, DFace->BR] = Yellow
-}
-
 /** PROPERTY VERIFICATION TESTS **/
-/*
+
 test expect {
-	eightStickersPerFace : { basics implies (all f : Face | #(f.stickers) = 8) } is theorem
+	--eightStickersPerFace : { basics implies (all f : Face | #(f.stickers) = 8) } is theorem
 
     -- this involves higher-order quantification? (not sure but Pardinus CLI obtained)
     -- eightStickersForEachColor : {scramble implies (all c : Color | #(Face.stickers.c) = 8)} is theorem
@@ -459,17 +209,15 @@ test expect {
             rotate[RFace]
         } => rotateFacePlane[RFace]
     } is theorem
+    
+    solvedImpliesAlwaysSolved : { traces => eventually always solved } is theorem
 
     // properties to preserve across moves -- 
-
-    --alwaysEightStickersForEachColor : {scramble implies always correctNumStickers} is theorem
     
 	-- This does not terminate!!
-	--test expect {
-	--	tracesEightStickersPerFace : {traces implies always faceEightStickers} is theorem
-	--    tracesEightStickersPerColor : {traces implies always faceEightStickers} is theorem
-	--    tracesEightStickersRightPosition : {traces implies always colorStickersRightPosition} is theorem
-	--}
+    --tracesEightStickersPerFace : {traces implies always faceEightStickers} is theorem
+    --tracesEightStickersRightPosition : {traces implies always colorStickersRightPosition} is theorem
+    --alwaysEightStickersForEachColor : {scramble implies always colorEightStickers} is theorem
 	
 	--test expect {
 	--	eightStickersPerFace : {basics implies faceEightStickers} is theorem
@@ -477,6 +225,5 @@ test expect {
 	--}
 	
 }
-*/
 
 run { traces sticker_based_1_step_scramble }
