@@ -442,7 +442,7 @@ pred solved_stutter {
 }
 
 -- converting these into tests for regular solver
-pred less_dumb_solver {
+pred less_naive_solver {
 	-- don't undo your most recent move
 	--always(all f: Face | rotate[f] implies not after counter_rotate[f])
 	--always(all f: Face | counter_rotate[f] implies not after rotate[f])
@@ -462,7 +462,7 @@ pred less_dumb_solver {
 
 pred traces {
 	basics
-	--less_dumb_solver
+	--less_naive_solver
 	not solved
 	always(not solved iff {some f: Face | rotate[f] or counter_rotate[f]})
 	always(not solved implies eventually always solved)
